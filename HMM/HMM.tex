@@ -1,0 +1,528 @@
+\documentclass[a4paper]{jsarticle}
+\usepackage{amsmath}
+\usepackage{bm}
+\usepackage{amssymb}
+
+\setlength{\topmargin}{10mm}        %上マージン　20mm
+\addtolength{\topmargin}{-1in}      %標準のマージン(1inch)を引く
+\setlength{\textheight}{237mm}      %本文の長さ
+\setlength{\oddsidemargin}{20mm}    %奇数ページ　左マージン　10mm
+\addtolength{\oddsidemargin}{-1in}  %奇数ページ　標準のマージン(1inch)を引く
+\setlength{\evensidemargin}{20mm}   %偶数ページ　左マージン　10mm
+\addtolength{\evensidemargin}{-1in} %偶数ページ　標準のマージン(1inch)を引く
+\setlength{\textwidth}{170mm}       %本文の長さ(横) 210 -(10+10) = 190
+
+\newcommand{\argmax}{\mathop{\rm arg~max}\limits}
+
+\begin{document}
+\title{隠れマルコフモデルの計算ノート}
+\author{@teramonagi}
+\maketitle
+
+\section{イントロダクション}
+このノートは『パターン認識と機械学習 下 - ベイズ理論による統計的予測』（以下、PRML)の第13章「系列データ」に記載されている
+トピックである「隠れマルコフモデル(以下、HMM)」の数式変形、特に
+\begin{itemize}
+    \item HMMの最尤推定（Baum-Welchアルゴリズム）(本稿\ref{sec:EM}章）
+    \item フォワード・バックワードアルゴリズム（本稿\ref{sec:fb}章）
+\end{itemize}
+をかっちりと数式を使って導出する事を目的とした個人的な記録を兼ねたノートである。
+PRML\cite{Bishop}の第13章「系列データ」は８章のグラフィカルモデリングとの結びつきが強く、PRML\cite{Bishop}でもよく参照されているが、
+本稿では出来るだけこのドキュメント内で閉じた話とするため
+グラフィカルモデリングとの兼ね合いについては一切触れておらず、またそのため若干構成が異なる点に注意されたい。
+対象読者のレベルとしては条件付き確率の定義やベイズの定理を知っており、すらすら式変形ができる程度が望ましい。
+
+本稿の構成は次の通りである。\ref{sec:markov}章で隠れマルコフモデルを説明するための礎となるマルコフモデルに対する簡単な説明を与え、\ref{sec:hmm}章でその発展形としての
+隠れマルコフモデルについての説明を行う。続く\ref{sec:math}章では、後の計算で必要になる数学的な道具の定義やその説明を記し、\ref{sec:EM}、\ref{sec:fb}章にて
+本稿の主題であるHMMの最尤推定とフォワード・バックワードアルゴリズムの解説を行う。
+
+
+\section{（一次）マルコフモデル}\label{sec:markov}
+まず、隠れマルコフモデルを定義する前にマルコフモデルを説明する。
+系列データ\footnote{ここでは単に時系列データとでも考えておけばよい。適当に順序付けられたデータの事である。}を扱う際に最も簡略化した仮定を置こうとすると\textbf{それぞれのデータは独立・同一な確率分布に従う}と仮定するのが最も簡単であろう。
+しかし、この方法では一切の\textbf{データ間の相互依存関係}を記述することができない。
+そこでデータ間の相互依存性を導入する上で最も簡単な方法の１つが次に述べる\textbf{マルコフモデル}を考えることである。
+
+まず、ある観測系列データ$X:=\{x_n,n=1,\dots,N\}$の同時分布関数$p(x_1,\dots,x_N)$を、条件付き確率の性質
+\begin{align}
+    P(A,B) = P(A|B)P(B), (^{\forall}A, ^{\forall}B \subset \Omega)
+    \label{}
+\end{align}
+を繰り返し適用することで一般性を失わずに
+\begin{align}　
+	\begin{aligned}
+		p(x_1,\dots,x_N) 
+		&= p(x_N|x_1,\dots,x_{N-1}) p(x_1,\dots,x_{N-1}) \\
+		&= p(x_N|x_1,\dots,x_{N-1}) p(x_{N-1}|x_1,\dots,x_{N-2}) p(x_1,\dots,x_{N-2}) \\
+		&= p(x_N|x_1,\dots,x_{N-1}) p(x_{N-1}|x_1,\dots,x_{N-2}) p(x_{N-2}|x_1,\dots,x_{N-3}) p(x_1,\dots,x_{N-3}) \\
+		&\cdots\\
+		&= p(x_N|x_1,\dots,x_{N-1}) p(x_{N-1}|x_1,\dots,x_{N-2}) p(x_{N-2}|x_1,\dots,x_{N-3}) \cdots p(x_3|x_1,x_2)p(x_2|x_1)p(x_1) \\
+		&= p(x_1) \prod_{n=2}^{N} p(x_n|x_1,\dots,x_{n-1})
+	\end{aligned}
+	\label{eq:def_general_dist}
+\end{align}
+と展開することができる\footnote{PRML\cite{Bishop}(13.1)式}。
+ここで条件付き分布の各々が最も直近の観測値にだけに依存し、それよりも過去のデータに依存しないという条件を課したい。
+すなわち数式で書くと
+\begin{align}
+    p(x_n|x_1,\dots,x_{n-1}) = p(x_n|x_{n-1})
+	\label{}
+\end{align}
+が成立すると仮定すると、\eqref{eq:def_general_dist}式は
+\begin{align}
+	p(x_1,\dots,x_N) = p(x_1) \prod_{n=2}^{N} p(x_n|x_{n-1})
+	\label{eq:def_markov_dist}
+\end{align}
+と変形することができ、\textbf{一次マルコフ連鎖}と呼ばれるモデルの分布関数を得る \footnote{PRML\cite{Bishop}(13.2)式}。
+このモデルは\textbf{各時系列データの生成確率がその一時点前のデータにのみ依存する}という特徴的な構造になっている。
+
+\section{隠れマルコフモデルとは}\label{sec:hmm}
+次にこの一次マルコフ連鎖の特色を活かしつつ、離散的な値を取る\textbf{潜在変数系列}$Z:=\{z_n,n=1,\dots,N\}$を導入する事によってよりモデルの表現力をより高めることを検討しよう。
+考え方としては
+\begin{itemize}
+    \item 観測変数$x_n$は潜在変数$z_n$に影響を受けて生成される
+    \item 潜在変数$z_n$は一次マルコフ連鎖に従い$z_{n-1}$の影響を受けて生成される
+    \item 観測変数$x_n$同士は独立である
+\end{itemize}
+という方法を採用する。この条件を満たすように構築したモデルの１つが\textbf{隠れマルコフモデル}であり、
+先ほど導入した潜在変数系列$Z$と観測変数系列$X$の同時確率分布を以下のように表現するものである。
+\begin{align*}
+	p(\bm{x}_1,\dots,\bm{x}_N,\bm{z}_1,\dots,\bm{z}_N) &:= p(\bm{z}_1) \left[ \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1})\right] \prod_{k=1}^N p(\bm{x}_k|\bm{z}_k)
+	\label{eq:HMM}
+\end{align*}
+潜在変数系列$Z$が一次マルコフ連鎖\eqref{eq:def_markov_dist}の構造を取っている点に加えて、
+既述の一次マルコフ連鎖では$x_n$が$x_{n-1}$により条件付けられて生成されていたが、
+隠れマルコフモデルでは潜在変数$z_n$により条件付けられることになるが特徴である。
+
+
+このモデルにおいて、（特にほかならぬ私が）興味があり、本稿で扱うトピックは
+\begin{enumerate}
+    \item モデルを現実の系に当てはめた際のパラメーター推計の方法(本稿\ref{sec:EM}章）
+    \item 観測変数系列$X$を取得した際の潜在状態の推定(本稿\ref{sec:fb}章)
+\end{enumerate}
+である。本題に入る前に次章では数学的な準備・定式化を行っておく。
+
+\section{数学的な準備}\label{sec:math}
+具体的な計算に入る前に数学的な定式化をここに記しておく。以下の議論は適当な確率測度$P$が定義された空間上で行うものとする
+\footnote{真面目に書くならフィルター付き確率空間$(\Omega,\mathcal{F}(=\mathcal{F}_N),\mathbb{F},P)$を定義し、
+$n$で添え字付けられた$x_n$や$z_n$と言った確率変数に関してすべて$\mathcal{F}_n$-可測であるとするという感じか}。
+
+既述ではあるが、本稿では系列データとして扱うデータとして以下の二種類を用意する。
+\begin{itemize}
+    \item 観測変数系列$X:=\{x_n,n=1,\dots,N\}$:実際に観測・取得することが出来るデータ（離散・連続変数どちらでも良い）
+    \item 潜在変数系列$Z:=\{z_n,n=1,\dots,N\}$:実際に観測・取得する事が出来ないデータ（離散変数）
+\end{itemize}
+$x_n$の次元については今回直接に言及しないので特段明記することはないが例えば$x_n \in \mathbb{R}^d$($d$次元計量線形ベクトル空間の元等）
+とでも考えておけばよい。
+一方、潜在変数系列$Z$については以下のように仮定を置く。
+問題として取り扱いたい・考えているシステム（系）には$K$個の潜在変数の取り得る値（状態）があるとし、
+各時点$n$での状態を表す潜在変数$z_n,n \in \{1,\dots,N\}$を$K$次元ベクトル空間$\mathbb{K}$上の元とし、以下のように書くこととする。
+\begin{align}
+    \begin{aligned}
+    	z_n &= 
+	    \begin{pmatrix}
+		    z_{n1} \\
+		    z_{n2} \\
+		    \vdots \\
+		    z_{nK}
+	    \end{pmatrix} \\
+        z_{nk} &\in \{ 0,1 \}, ^\forall n \in \{1,\dots,N\}, ^\forall k \in \{1,\dots,K\} \\
+	    & \sum_{k=1}^{K} z_{nk} = 1, ^\forall n \in \{1,\dots,N\}
+    \end{aligned}
+\end{align}
+こう書く事によるメリットは$K$個ある（と仮定している）潜在変数の取り得る値（状態）を$K$次元ベクトル$z_n$
+の要素$z_{nk}$が$1$となる箇所に対応させて判断することができるということである\footnote{PRML\cite{Bishop}でいう１対K符号化法}。
+具体的に書くと、潜在変数$z$は以下の$K$個のベクトル値のいずれかを取るということである。
+\begin{align}
+	z = 
+	\left.
+        \begin{pmatrix}
+    		1 \\
+    		0 \\
+    		\vdots \\
+    		0 \\
+    		0
+    	\end{pmatrix}
+    	\text{or}
+    	\begin{pmatrix}
+    		0 \\
+    		1 \\
+    		\vdots \\
+    		0 \\
+    		0
+    	\end{pmatrix}
+    	\text{or}
+    	\cdots
+    	\begin{pmatrix}
+    		0 \\
+    		0 \\
+    		\vdots \\
+    		1 \\
+    		0
+    	\end{pmatrix}
+    	\text{or}
+    	\begin{pmatrix}
+    		0 \\
+    		0 \\
+    		\vdots \\
+    		0 \\
+    		1
+    	\end{pmatrix}
+        \quad
+    \right\}
+    K\text{個}
+	\label{}
+\end{align}
+このように書くことで見通し良く数式変形していくことが可能になる。
+
+
+さらに隠れマルコフモデルにおいて潜在状態間の遷移を表す条件付き分布$p(z_n|z_{n-1})$を特徴づけるパラメーター、$K \times K$行列$A$を導入しよう。
+この行列$A$の各成分は
+\begin{align}
+    A_{jk} := p(z_{nk}=1|z_{n-1,j}=1)
+	\label{}
+\end{align}
+として定義するものであり、解釈としては\textbf{潜在変数の状態が状態$j$から状態$k$へと遷移する確率}である。
+遷移\textbf{確率}であることから行列$A$は規格化されており、``系はいずれかの状態に遷移する''という意味で行き先の状態$k$に対して和を取ると1になる。
+すなわち
+\begin{align}
+	\sum_{k=1}^{K} A_{jk} = 1 , ^\forall k \in \{1,2,\dots,K \}
+	\label{}
+\end{align}
+が成立する。$z_{nk} \in \{0,1\} ,^\forall n \in \{1,\dots,N\},^\forall k \in \{1,\dots,K\}$であることを思い出し、
+行列$A$を使うと条件付き分布$p(z_n|z_{n-1})$は明示的にかけて
+\begin{align}
+    p(z_n|z_{n-1}) := p(z_n|z_{n-1},A) = \prod_{k=1}^K \prod_{j=1}^K (A_{jk})^{z_{n-1,j} \times z_{nk}}
+    \label{ref:def_A}
+\end{align}
+とすることが出来る\footnote{PRML\cite{Bishop}(13.7)式。元のテキストだと$z_{n-1,j}z_{nk}$がべき乗のように見えるのであえて括弧で括って書いている。}。
+例えば潜在変数$z_n,z_{n-1}$がそれぞれ$z_{nk'}=1,z_{n-1,j'}=1$に対応する状態${\bm k}',{\bm j}' \in \mathbb{K}$を取っていたとすると、
+\eqref{ref:def_A}式の右辺の積$\prod$は$k=k',j=j'$の箇所のみが有効な値$(A_{j'k'})^{1 \times 1}=A_{j'k'}$を取り、
+残りの項は$(A_{jk})^{0}=1$となるので
+\begin{align}
+    p(z_n={\bm k}'|z_{n-1}={\bm j}') = p(z_{nk'}=1|z_{n-1,j'}=1,A) = \prod_{k=1}^K \prod_{j=1}^K (A_{jk})^{z_{n-1,j} \times z_{nk}} = A_{j'k'}
+    \label{}
+\end{align}
+というように、ある特定の状態間（この場合${\bm k}'$と${\bm j}'$間）の遷移を行列の要素に紐付けてみる事が出来る。
+
+
+潜在変数の初期状態$z_1$も同様に$K$次元ベクトルのパラメーター$\pi \in \mathbb{K}$を
+\begin{align}
+    \begin{aligned}
+        \pi &=
+        \begin{pmatrix}
+            \pi_1 \\
+            \pi_2 \\
+            \vdots \\
+            \pi_{K}
+        \end{pmatrix} \\
+        \sum_{k=1}^K \pi_k &= 1
+    \end{aligned}
+    \label{}
+\end{align}
+と導入することで特徴づけてやることにより
+\begin{align}
+    p(z_1) := p(z_1|\pi) = \prod_{k=1}^K \pi_k^{z_{1k}}
+    \label{}
+\end{align}
+とすることができる\footnote{PRML\cite{Bishop}(13.8)}。
+
+最後に本稿で具体的な導出は行わないが、隠れマルコフモデル\eqref{eq:HMM}の説明していない最後の項$p(x_k|z_k)$も
+分布を特徴づけるパラメータベクトル$\phi$を\footnote{この$\phi$の属する空間はモデル・分布の設定によるので明記しない}
+\begin{align}
+    \phi = 
+    \begin{pmatrix}
+        \phi_1 \\
+        \phi_2 \\
+        \vdots \\
+        \phi_K
+    \end{pmatrix}
+    \label{}
+\end{align}
+と導入することで
+\begin{align}
+    p(x_k|z_k) := p(x_k|z_k,\phi) = \prod_{k=1}^{K} p(x_n|\phi_k)^{z_{nk}}
+\end{align}
+とすることができる。
+各々の$\phi_k$は例えば平均$\mu$・分散$\sigma^2$の正規分布の場合は、その平均と分散のセット$\phi_k = (\mu,\sigma^2) \in \mathbb{R} \times \mathbb{R}_+$となる。
+以降では、本章で導入したパラメーター$A,\pi,\phi$をまとめて$\theta := \{\pi,A,\phi\}$と書く事にしよう。
+
+
+\section{HMMの最尤推定}\label{sec:EM}
+本章では本稿の目的の１つである観測変数系列$\bm{X}=\{\bm{x}_1,\cdots,\bm{x}_N\}$を既知、すなわち既にデータが手に入った物として、
+モデルのパラメーター$\theta=\{\pi,A,\phi\}$を最尤推定により求めることを考える。
+
+まず観測変数系列$X$と潜在変数系列$Z$の同時分布関数$p(X,Z|\theta)$を$Z$について和を取ることで周辺化し、
+尤度関数を導入する\footnote{パラメーターへの依存性を明確にするため$\theta$で条件付けている}\footnote{PRML\cite{Bishop}(13.11)式}。
+\begin{align}
+	L(\theta|X) = p(X|\theta) = \sum_{Z} p(X,Z|\theta)
+	\label{}
+\end{align}
+この尤度関数$L(\theta|X)$を直に最大化し最尤推定を実行しようとすると$\sum_Z$の計算をする事になるが、
+$N$個ある潜在変数系列に対して各々$K$個の状態を取るので結局$K^N$項の和を計算する事になるので、
+取り扱おうとするデータサイズが大きいとこれは実質不可能である。
+
+ここではこの困難を克服するためにEMアルゴリズムを用いる。
+EMアルゴリズムは２つのステップ
+\begin{itemize}
+    \item Eステップ：現在推定されている潜在変数の分布に基づいて、モデルの尤度の期待値を計算
+    \item Mステップ：Eステップで求まった尤度の期待値を最大化するパラメータを求める
+\end{itemize}
+で構成されているアルゴリズムであり、このそれぞれを交互に繰り返すことによりパラメータを推計するアルゴリズムである。
+
+\subsection{Eステップ}
+本稿の対象であるHMMにおいて、Eステップではまず最初にパラメータをある適当な値$\theta^{old}$と設定し、
+潜在変数の事後分布$p(Z|X,\theta^{old})$を求め、完全データに対する尤度関数
+\footnote{$X,Z$共に解っている状況での尤度関数。すなわち上述の$L(\theta|X)$ではなく、強いて書くなら$L'(\theta|X,Z)$}
+の対数の期待値$Q(\theta,\theta^{old})$を
+\begin{align}
+    \begin{aligned}
+	    Q(\theta,\theta^{old}) &= \mathbb{E}_{Z} \left[ \ln p(X,Z|\theta) \right] \\
+		    				   &= \sum_{Z} p(Z|X,\theta^{old}) \ln p(X,Z|\theta)
+    \end{aligned}
+    \label{eq:def_Q}
+\end{align}
+として求める\footnote{PRML\cite{Bishop}(13.12)式}。
+
+
+ここで今後の式変形を見通し良くするために潜在変数$z_n$の周辺事後分布$\gamma(z_n)$、
+２つの連続した潜在変数に対する同時分布$\xi(z_{n-1},z_n)$を導入する\footnote{PRML\cite{Bishop}(13.13)(13.14)式}。
+\begin{align} 
+    \gamma(z_n)      &= p(z_n|X,\theta^{old}) ,        & \gamma:\mathbb{K} \to [0,1] \\
+    \xi(z_{n-1},z_n) &= p(z_{n-1},z_n|X,\theta^{old}), & \xi:\mathbb{K}\times\mathbb{K} \to [0,1]
+	\label{}
+\end{align}
+この$\gamma(z_n),\xi(z_{n-1},z_n)$について潜在変数$z$と同じく、各要素での表現
+\begin{align}
+    \begin{aligned}
+        \gamma(z_{nk})           &:= \mathbb{E} \left[ z_{nk} \right] = \sum_{z_n} \gamma(z_n) z_{nk} = p(z_{nk}=1|X,\theta^{old}) \\
+        \xi(z_{n-1,j},z_{nk}) &:= \mathbb{E}\left[ z_{n-1,j}z_{nk} \right] = \sum_{z_{n-1},z_n} z_{n-1,j}z_{nk} = p(z_{n-1,j}=1,z_{nk}=1|X,\theta^{old})
+    \end{aligned}
+    \label{eq:def_gamma_xi_nk}
+\end{align}
+を導入しておく。
+
+\eqref{eq:HMM}式を\eqref{eq:def_Q}に代入し、$\gamma,\xi$の定義\eqref{eq:def_gamma_xi_nk}を用いて式変形してくと$Q(\theta,\theta^{old})$は
+\begin{align}
+\begin{aligned}
+	Q(\theta,\theta^{old}) 
+	&= \sum_{Z} p(Z|X,\theta^{old}) \ln p(X,Z|\theta)\\
+	&= \sum_{Z} p(Z|X,\theta^{old}) \left\{ \ln p(z_1|\pi) + \sum_{k=2}^{N} \ln p(z_k|z_{k-1},A) + \sum_{k=1}^N \ln p(z_k|x_k,\phi_k) \right\} \\
+	&= \sum_{Z} p(Z|X,\theta^{old}) \ln p(z_1|\pi) +  \sum_{Z} p(Z|X,\theta^{old}) \sum_{k=2}^{N} \ln p(z_k|z_{k-1},A) + \sum_{Z} p(Z|X,\theta^{old}) \sum_{k=1}^N \ln p(z_k|x_k,\phi_k)  \\
+	&= \sum_{z_1} p(z_1|X,\theta^{old}) \ln p(z_1|\pi) + \sum_{k=2}^{N} \sum_{Z} p(Z|X,\theta^{old}) \ln p(z_k|z_{k-1},A) + \sum_{k=1}^{N} \sum_{Z} p(Z|X,\theta^{old})  \ln p(z_k|x_k ,\phi_k) \\
+	&= \sum_{z_1} p(z_1|X,\theta^{old}) \ln p(z_1|\pi) + \sum_{k=2}^{N} \sum_{z_k,z_{k-1}} p(z_k,z_{k-1}|X,\theta^{old}) \ln p(z_k|z_{k-1},A) + \sum_{k=1}^{N} \sum_{z_k} p(z_k|X,\theta^{old}) \ln p(z_k|x_k,\phi_k) \\
+	&= \sum_{z_1} \sum_{k=1}^{K} \gamma(z_1) z_{1k} \ln \pi_k
+	+  \sum_{k=2}^{N}  \sum_{z_k,z_{k-1}} \sum_{j=1}^{K} \sum_{k=1}^{K} \xi(z_{k-1},z_k) z_{k-1,j} z{k,k} \ln A_{jk} 
+	+  \sum_{k=1}^{N} \sum_{k=1}^{k} \gamma(z_k) z_{kk} \ln p(x_k|\phi_k) \\
+	&= \sum_{k=1}^{K} \gamma(z_{1,k}) \pi_k
+   	+  \sum_{n=2}^{N} \sum_{j=1}^{K} \sum_{k=1}^{K} \xi(z_{n-1,j},z_{n,k}) \ln A_{jk} 
+	+  \sum_{n=1}^{N} \sum_{k=1}^{K} \gamma(z_{n,k}) \ln p(x_k|\phi_k)
+\end{aligned}
+	\label{eq:calc_Q}
+\end{align}
+と変形する事が出来る\footnote{PRML\cite{Bishop}(13.17)式}。
+\eqref{eq:calc_Q}式の最後の行を見ると理解できるようにあとは$\gamma,\xi$を計算できれば$Q(\theta,\theta^{old})$を計算する事が出来る。
+この話題については\cite{sec:fb}章「フォワード・バックワードアルゴリズム」で行うことにして、EMアルゴリズムのMステップを先に考える。
+
+\subsection{Mステップ}
+EMアルゴリズムのMステップでは、パラメーター$\theta$を適当に選択することで
+$Q(\theta,\theta^{old})$の最大化を行う事を考える。
+
+ここで遷移行列$A$と初期分布$\pi$には条件
+\begin{align*}
+    \begin{aligned}
+        & \sum_{k}A_{jk} = 1, ^\forall k \in \{1,\dots,K\} \\
+        & \sum_{k=1}^{K} \pi_k = 1
+    \end{aligned}
+\end{align*}
+が付いていることを思い出そう。
+従って、ラグランジュの未定乗数$(\lambda_1,\dots,\lambda_{K+1})$を導入し、以下のような拘束条件付きの
+最大化問題として$Q(\theta,\theta^{old})$の最大化問題を解く事にする。
+\begin{align}
+	\begin{aligned}
+		\theta_{max}          &= \argmax_{\theta=(\pi,A,\phi)} F(\pi, A, \phi) \\ 
+		F(\pi, A, \phi) &:= Q(\theta, \theta^{old}) - \lambda_1\left(\sum_{k=1}^{K} \pi_k - 1 \right) + \sum_{j=1}^{K} \lambda_{j+1} \left( \sum_{k=1}^{K} A_{jk} - 1 \right)\\ 
+	\end{aligned}
+\label{}
+\end{align}
+この関数$F(\pi, A, \phi)$は素直に$\pi,A$の各ベクトル・行列要素で微分することで
+\begin{align}
+	\begin{aligned}
+		\frac{\partial F}{\partial \pi_k}  &= \frac{\gamma(z_{1k})}{\pi_k} - \lambda_1 = 0, 
+			\therefore \pi_k = \frac{\gamma(z_{1k})}{\lambda_1}  \\
+		\frac{\partial F}{\partial A_{jk}} &= \frac{\sum_{n=2}^{N} \xi(z_{n-1,j},z_{nk})}{A_{jk}} - \lambda_{j+1}, 
+			\therefore A_{jk} = \frac{\sum_{n=2}^{N} \xi(z_{n-1,j},z_{nk})}{\lambda_{j+1}} 
+	\end{aligned}
+	\label{eq:lagrange_pi_A}
+\end{align}
+とすることが出来る。残りのパラメーター$\phi$についての微分は観測変数$x$がどのような分布に従うと設定するかに応じて結果が変わるものであるので、ここでは示さない。
+ここで算出した\eqref{eq:lagrange_pi_A}を拘束条件であるに代入して$(\lambda_1,\dots,\lambda_{K+1})$を求める。
+\begin{align}
+	\begin{aligned}
+		\sum_{k=1}^{K} \pi_k  &=  \sum_{k=1}^{K} \frac{\gamma(z_{1k})}{\lambda_1}  = 1,
+			\therefore \lambda_1 = \sum_{j=1}^{K} \gamma(z_{1j}) \\
+		\sum_{k=1}^{K} A_{jk} &=  \sum_{k=1}^{K} \frac{\sum_{n=2}^{N} \xi(z_{n-1,j},z_{nk})}{\lambda_{j+1}} =1,
+        \therefore \lambda_{j+1} = \sum_{l=1}^{K} \sum_{n=2}^{N} \xi(z_{n-1,j},z_{nl})
+	\end{aligned}
+	\label{eq:lagrange_lambda}
+\end{align}
+ただしここで和記号$\sum$の変数を変更している点に注意されたい。。上記の\eqref{eq:lagrange_lambda}の結果を再び\eqref{eq:lagrange_pi_A}に戻すことで
+\begin{align}
+	\begin{aligned}
+		\pi_k　&=  \frac{\gamma(z_{1k})}{\lambda_1} = \frac{\gamma(z_{1k})}{\sum_{j=1}^{K} \gamma(z_{1j})} \\
+        A_{jk} &= \frac{\sum_{n=2}^{N} \xi(z_{n-1,j},z_{nk})}{\lambda_{j+1}} =  \frac{\sum_{n=2}^{N} \xi(z_{n-1,j},z_{nk})}{ \sum_{l=1}^{K} \sum_{n=2}^{N} \xi(z_{n-1,j},z_{nl})}
+	\end{aligned}
+	\label{}
+\end{align}
+とすることが出来る\footnote{PRML\cite{Bishop}の(13.18),(13.19)式}。
+
+
+このようにEステップ・Mステップそれぞれを構築することでEMアルゴリズムでの定式化は完了である。
+残された問題は$Q(\theta,\theta^{old})$の最尤推定を行うための$\gamma(z_{nk}),\xi(z_{n-1,j},z_{nk})$の効率的な算出であり、
+これが次のフォワード・バックワードアルゴリズムへとつながる。
+
+\section{フォワード・バックワードアルゴリズム}\label{sec:fb}
+前述のように$\gamma(z_{nk}),\xi(z_{n-1,j},z_{nk})$の効率的な算出方法を検討したい。
+この章ではPRML\cite{Bishop}にならいパラメーター$\theta$への依存性を明記しないこととする。例えば
+\begin{align*}
+    p(X,z_n) = p(X|z_n,\theta)
+\end{align*}
+という略記法を用いる。
+
+ここで
+\begin{align}
+    p(X,z_n) = p(x_1,\dots,x_n|z_n)p(x_{n+1},\dots,x_N|z_n)p(z_n)
+    \label{}
+\end{align}
+という関係が成り立つ
+\footnote{PRML\cite{Bishop}(13.24)。証明は余力があるときにAppendixに記載される}
+ので、$\gamma(z_n)$は以下のように変形される。
+\begin{align}
+    \begin{aligned}
+	    \gamma(z_n) &= p(z_n|X) = \frac{p(X|z_n)p(z_n)}{p(X)} \\
+        &= \frac{p(x_1,\dots,x_n|z_n)p(x_{n+1},\dots,x_N|z_n)p(z_n)}{p(X)}\\
+        &= \frac{p(x_1,\dots,x_n,z_n)p(x_{n+1},\dots,x_N|z_n)}{p(X)}\\
+        &= \frac{\alpha(z_n)\beta(z_n)}{p(X)}
+    \end{aligned}
+    \label{}
+\end{align}
+ただしここで
+\begin{align}
+    \alpha(z_n) := p(x_1,\dots,x_n,z_n) \\
+    \beta(z_n)  := p(x_{n+1},\dots,x_N|z_n)
+    \label{}
+\end{align}
+と定義している\footnote{PRML\cite{Bishop}(13.34)(13.35)}。
+
+
+$\alpha(z_n)$と$\beta(z_n)$を効率的に求めるための計算方法を構築する。
+そのために以下のように$\alpha(z_n)$を変形する。
+\begin{align}
+	\begin{aligned}
+		\alpha(z_n)
+		&= p(x_1,\dots,x_n,z_n) \\
+		&= p(x_1,\dots,x_n|z_n)p(z_n) \\
+		&= p(x_{n}|z_n,x_1,\dots,x_{n-1}) p(x_1,\dots,x_{n-1}|z_n) p(z_n) \\
+		&= p(x_{n}|z_n) p(x_1,\dots,x_{n-1}|z_n) p(z_n) \\
+		&= p(x_{n}|z_n) p(x_1,\dots,x_{n-1},z_n) \\
+		&= p(x_{n}|z_n) \sum_{z_{n-1}} p(x_1,\dots,x_{n-1},z_{n-1},z_n) \\
+		&= p(x_{n}|z_n) \sum_{z_{n-1}} p(x_1,\dots,x_{n-1},z_n|z_{n-1}) p(z_{n-1}) \\
+		&= p(x_{n}|z_n) \sum_{z_{n-1}} p(x_1,\dots,x_{n-1}|z_n,z_{n-1}) p(z_n|z_{n-1})p(z_{n-1}) \\
+		&= p(x_{n}|z_n) \sum_{z_{n-1}} p(x_1,\dots,x_{n-1}|z_{n-1}) p(z_n|z_{n-1})p(z_{n-1}) \\
+		&= p(x_{n}|z_n) \sum_{z_{n-1}} p(x_1,\dots,x_{n-1},z_{n-1}) p(z_n|z_{n-1}) \\
+		&= p(x_{n}|z_n) \sum_{z_{n-1}} \alpha(z_{n-1}) p(z_n|z_{n-1})
+	\end{aligned}
+	\label{}
+\end{align}
+この式は$\alpha(z_{n-1})$を算出してから$\alpha(z_n)$を算出するという意味で、
+$n$に関して、言うなれば時間の向きに関して\textbf{前向きな（フォワード）再帰}計算となっているので、
+フォワード$\alpha$再帰と呼ぶ事にする。
+このフォワード再帰計算を行うための初期条件$\alpha(z_1)$は
+\begin{align}
+	\begin{aligned}
+		\alpha(z_1) 
+		&= p(x_1,z_1) = p(x_1|z_1)p(z_1) \\
+		&= \left( \prod_{k=1}^{K} \pi_{k}^{z_{1k}} \right) \left( \prod_{k=1}^{K} p(x_k|\phi_k)^{z_{1k}} \right) \\
+		&= \prod_{k=1}^{K} \left\{ \pi_{k} p(x_1|\phi_k) \right\}^{z_{1k}}
+	\end{aligned}
+	\label{}
+\end{align}
+として求める事が出来る。
+同様に$\beta(z_n)$に関する再帰式を導出する。
+\begin{align}
+	\begin{aligned}
+		\beta(z_n) 
+		&= p(x_{n+1},\dots,x_N|z_n) \\
+		&= \sum_{z_{n+1}} p(x_{n+1},\dots,x_N,z_{n+1}|z_n) \\
+		&= \sum_{z_{n+1}} p(x_{n+1},\dots,x_N|z_{n+1},z_n) p(z_{n+1}|z_n) \\
+		&= \sum_{z_{n+1}} p(x_{n+1},\dots,x_N|z_{n+1}) p(z_{n+1}|z_n) \\
+		&= \sum_{z_{n+1}} p(x_{n+2},\dots,x_N|z_{n+1},x_{n+1}) p(x_{n+1}|z_{n+1}) p(z_{n+1}|z_n) \\
+		&= \sum_{z_{n+1}} p(x_{n+2},\dots,x_N|z_{n+1}) p(x_{n+1}|z_{n+1}) p(z_{n+1}|z_n) \\
+		&= \sum_{z_{n+1}} \beta(z_{n+1}) p(x_{n+1}|z_{n+1}) p(z_{n+1}|z_n)
+	\end{aligned}
+	\label{}
+\end{align}
+これは$\alpha$の再帰式とは逆に$\beta(z_{n+1}$を算出した後$\beta(z_n)$を算出するという
+$n$の向きに対して\textbf{後向き（バックワード）再帰}計算となっているので、バックワード$\beta$再帰と呼ぶ事にする。
+これでPRML\cite{Bishop}の(13.38)式を導出することが出来た。
+
+$\beta$の再帰計算の初期値となる$\beta(z_N)$は
+$\gamma(z_N)=p(z_N|X)$,$\alpha(z_N)=p(x_1,\dots,x_N,z_N)$である一方、
+\begin{align}
+	\gamma(z_N) = \frac{\alpha(z_N)\beta(z_N)}{p(X)}
+	\label{}
+\end{align}
+となるので
+\begin{align}
+	\beta(z_N) = 1
+	\label{}
+\end{align}
+となる。
+
+
+\begin{align}
+	\sum_{z_n} \gamma(z_n) = \sum_{z_n} p(z_n|X) = 1
+\end{align}
+\begin{align}
+	1 = \sum_{z_n} \gamma(z_n) = \sum_{z_n} \frac{p(\alpha(z_n)\beta(z_n)}{p(X)} = \frac{1}{p(X)} \sum_{z_n} p(\alpha(z_n)\beta(z_n) \\
+	\therefore p(X) = \sum_{z_n} p(\alpha(z_n)\beta(z_n)
+	\label{}
+\end{align}
+として尤度関数$p(X)$を計算することが出来る。上式は任意の$n \in \left\{ 1,\cdots, N \right\}$に対して成立する事、
+またで見たように$\beta(z_N)=1$である事を勘案すると
+\begin{align}
+	p(X) = \sum_{z_N} p(\alpha(z_N))
+	\label{}
+\end{align}
+と書くことが出来る。これでPRML\cite{Bishop}の(13.41)(13.42)を導出する事が出来た。
+
+
+$\xi(z_{n-1},z_n)$を求めるには以下のように計算する。 
+\begin{align}
+	\begin{aligned}
+		\xi(z_{n-1},z_n) 
+		&= p(z_{n-1},z_{n}|X) \\
+		&= \frac{p(X|z_{n-1},z_n)p(z_{n-1},z_n)}{p(X)} \\
+		&= \frac{p(x_{1:n-1}|z_{n-1})p(x_n|z_n)p(x_{n+1:N}|z_n)p(x_{n+1:N}|z_n)p(z_n|z_{n-1})p(z_{n-1}}{p(X)}\\
+		&= \frac{p(x_{1:n-1}|z_{n-1})p(z_{n-1})p(x_n|z_n)p(x_{n+1:N}|z_n)p(x_{n+1:N}|z_n)p(z_n|z_{n-1}}{p(X)}\\
+		&= \frac{\alpha(z_{n-1})p(x_n|z_n)p(x_{n+1:N}|z_n)p(x_{n+1:N}|z_n)\beta(z_n)}{p(X)}
+	\end{aligned}
+	\label{}
+\end{align}
+フォワード($\alpha$)再帰とバックワード($\beta$)再帰の計算結果を用いて$\xi(z_{n-1},z_n)$を計算する事が出来る。
+
+ここまで算出してきた道具でEMアルゴリズムを完成させることが出来るのでその手順をまとめておこう。
+\begin{enumerate}
+    \item パラメータ$\theta^{old}=(\pi,A,\phi)$を適当に定める
+    \item フォワード$\alpha$再帰、バックワード$\beta$再帰を実行し、$\gamma(z_n),\xi(z_{n-1},z_n)$を求める（Eステップ完了）
+    \item 式を用いて更新されたパラメータ$\theta^{new}$を求める（Mステップ）
+    \item 2,3をパラメータ$\theta$が収束するまで交互に繰り返す
+\end{enumerate}
+
+
+\begin{thebibliography}{1}
+\bibitem{Bishop} C.M.ビショップ, パターン認識と機械学習（下）：ベイズ理論による統計的予測, 丸善出版, 2008.
+\end{thebibliography}
+
+\end{document}
+

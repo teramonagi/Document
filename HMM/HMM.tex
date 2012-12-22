@@ -2,6 +2,7 @@
 \usepackage{amsmath}
 \usepackage{bm}
 \usepackage{amssymb}
+\usepackage[dvipdfmx]{graphicx}
 
 \setlength{\topmargin}{10mm}        %ãƒ}[ƒWƒ“@20mm
 \addtolength{\topmargin}{-1in}      %•W€‚Ìƒ}[ƒWƒ“(1inch)‚ğˆø‚­
@@ -73,8 +74,8 @@ PRML\cite{Bishop}‚Ì‘æ13ÍuŒn—ñƒf[ƒ^v‚Í‚WÍ‚ÌƒOƒ‰ƒtƒBƒJƒ‹ƒ‚ƒfƒŠƒ“ƒO‚Æ‚ÌŒ‹‚Ñ‚Â‚
 	p(\bm{x}_1,\dots,\bm{x}_N) = p(\bm{x}_1) \prod_{n=2}^{N} p(\bm{x}_n|\bm{x}_{n-1})
 	\label{eq:def_markov_dist}
 \end{align}
-‚Æ•ÏŒ`‚·‚é‚±‚Æ‚ª‚Å‚«A\textbf{ˆêŸƒ}ƒ‹ƒRƒt˜A½}‚ÆŒÄ‚Î‚ê‚éƒ‚ƒfƒ‹‚Ì•ª•zŠÖ”‚ğ“¾‚é \footnote{PRML\cite{Bishop}(13.2)®}B
-‚±‚Ìƒ‚ƒfƒ‹‚Í\textbf{ŠeŒn—ñƒf[ƒ^‚Ì¶¬Šm—¦‚ª‚»‚Ìˆê“_‘O‚Ìƒf[ƒ^‚É‚Ì‚İˆË‘¶‚·‚é}‚Æ‚¢‚¤“Á’¥“I‚È\‘¢‚É‚È‚Á‚Ä‚¢‚éB
+‚Æ•ÏŒ`‚·‚é‚±‚Æ‚ª‚Å‚«A\textbf{ˆêŸƒ}ƒ‹ƒRƒt˜A½}‚ÆŒÄ‚Î‚ê‚éƒ‚ƒfƒ‹‚Ì•ª•zŠÖ”‚ğ“¾‚é\footnote{PRML\cite{Bishop}(13.2)®}B
+‚±‚Ìƒ‚ƒfƒ‹‚Í\textbf{ŠeŒn—ñƒf[ƒ^‚Ì¶¬Šm—¦‚ª‚»‚Ìˆê“_‘O‚Ìƒf[ƒ^‚É‚Ì‚İˆË‘¶‚·‚é}‚Æ‚¢‚¤“_‚ª“Á’¥“I‚È\‘¢‚É‚È‚Á‚Ä‚¢‚éB
 
 \section{‰B‚êƒ}ƒ‹ƒRƒtƒ‚ƒfƒ‹‚Æ‚Í}\label{sec:hmm}
 Ÿ‚É‚±‚ÌˆêŸƒ}ƒ‹ƒRƒt˜A½‚Ì“ÁF‚ğŠˆ‚©‚µ‚Â‚ÂA—£U“I‚È’l‚ğæ‚é\textbf{öİ•Ï”Œn—ñ}$Z:=\{\bm{z}_n,n=1,\dots,N\}$‚ğ“±“ü‚·‚é–‚É‚æ‚Á‚Ä‚æ‚èƒ‚ƒfƒ‹‚Ì•\Œ»—Í‚ğ‚æ‚è‚‚ß‚é‚±‚Æ‚ğŒŸ“¢‚µ‚æ‚¤B
@@ -93,11 +94,20 @@ PRML\cite{Bishop}‚Ì‘æ13ÍuŒn—ñƒf[ƒ^v‚Í‚WÍ‚ÌƒOƒ‰ƒtƒBƒJƒ‹ƒ‚ƒfƒŠƒ“ƒO‚Æ‚ÌŒ‹‚Ñ‚Â‚
 öİ•Ï”Œn—ñ$Z$‚ªˆêŸƒ}ƒ‹ƒRƒt˜A½\eqref{eq:def_markov_dist}‚Ì\‘¢‚ğæ‚Á‚Ä‚¢‚é“_‚É‰Á‚¦‚ÄA
 Šùq‚ÌˆêŸƒ}ƒ‹ƒRƒt˜A½‚Å‚Í$\bm{x}_n$‚ª$\bm{x}_{n-1}$‚É‚æ‚èğŒ•t‚¯‚ç‚ê‚Ä¶¬‚³‚ê‚Ä‚¢‚½‚ªA
 ‰B‚êƒ}ƒ‹ƒRƒtƒ‚ƒfƒ‹‚Å‚Íöİ•Ï”$\bm{z}_n$‚É‚æ‚èğŒ•t‚¯‚ç‚ê‚é‚±‚Æ‚É‚È‚é‚ª“Á’¥‚Å‚ ‚éB
+‚±‚Ì“Á’¥‚ÍƒOƒ‰ƒtƒBƒJƒ‹•\Œ»‚ğ—p‚¢‚é‚Æ—‰ğ‚µ‚â‚·‚­Aãq‚Ì“Á’¥‚ğ‚ÂHMM‚Í}\ref{fig:hmm}‚Ì‚æ‚¤‚É•\Œ»‚³‚ê‚éB
+‚±‚Ì}‚Å‚Í–îˆó‚ğ—p‚¢‚ÄŒn—ñƒf[ƒ^ŠÔ‚ÌˆË‘¶ŠÖŒW‚ğ•\Œ»‚µ‚Ä‚¢‚éB
+\begin{figure}
+    \begin{center}
+        \includegraphics[width=10cm]{HMM.png}
+        \caption{‰B‚êƒ}ƒ‹ƒRƒtƒ‚ƒfƒ‹(HMM)‚ÌƒOƒ‰ƒtƒBƒJƒ‹•\Œ»}
+        \label{fig:hmm}
+    \end{center}
+\end{figure}
 
 
-‚±‚Ìƒ‚ƒfƒ‹‚É‚¨‚¢‚ÄAi“Á‚É‚Ù‚©‚È‚ç‚Ê„‚ªj‹»–¡‚ª‚ ‚èA–{e‚Åˆµ‚¤ƒgƒsƒbƒN‚Í
+‚±‚±‚Å’è‹`‚µ‚½‰B‚êƒ}ƒ‹ƒRƒtƒ‚ƒfƒ‹(HMM)‚É‚¨‚¢‚ÄAi“Á‚É‚Ù‚©‚È‚ç‚Ê„‚ªj‹»–¡‚ª‚ ‚è–{e‚Åˆµ‚¤ƒgƒsƒbƒN‚Í
 \begin{enumerate}
-    \item ƒ‚ƒfƒ‹‚ğŒ»À‚ÌŒn‚É“–‚Ä‚Í‚ß‚½Û‚Ìƒpƒ‰ƒ[ƒ^[„Œv‚Ì•û–@(–{e\ref{sec:EM}Íj
+    \item ƒ‚ƒfƒ‹‚ğŒ»À‚ÌŒn‚É“–‚Ä‚Í‚ß‚½Û‚Ìƒpƒ‰ƒ[ƒ^„Œv‚Ì•û–@(–{e\ref{sec:EM}Íj
     \item ŠÏ‘ª•Ï”Œn—ñ$X$‚ğæ“¾‚µ‚½Û‚Ìöİó‘Ô‚Ì„’è(–{e\ref{sec:fb}Í)
 \end{enumerate}
 ‚Å‚ ‚éB–{‘è‚É“ü‚é‘O‚ÉŸÍ‚Å‚Í”Šw“I‚È€”õE’è®‰»‚ğs‚Á‚Ä‚¨‚­B
@@ -105,7 +115,7 @@ PRML\cite{Bishop}‚Ì‘æ13ÍuŒn—ñƒf[ƒ^v‚Í‚WÍ‚ÌƒOƒ‰ƒtƒBƒJƒ‹ƒ‚ƒfƒŠƒ“ƒO‚Æ‚ÌŒ‹‚Ñ‚Â‚
 \section{”Šw“I‚È€”õ}\label{sec:math}
 ‹ï‘Ì“I‚ÈŒvZ‚É“ü‚é‘O‚É”Šw“I‚È’è®‰»‚ğ‚±‚±‚É‹L‚µ‚Ä‚¨‚­BˆÈ‰º‚Ì‹c˜_‚Í“K“–‚ÈŠm—¦‘ª“x$P$‚ª’è‹`‚³‚ê‚½‹óŠÔã‚Ås‚¤‚à‚Ì‚Æ‚·‚é
 \footnote{^–Ê–Ú‚É‘‚­‚È‚çƒtƒBƒ‹ƒ^[•t‚«Šm—¦‹óŠÔ$(\Omega,\mathcal{F}(=\mathcal{F}_N),\mathbb{F},P)$‚ğ’è‹`‚µA
-$n$‚Å“Y‚¦š•t‚¯‚ç‚ê‚½$\bm{x}_n$‚â$\bm{z}_n$‚ÆŒ¾‚Á‚½Šm—¦•Ï”‚ÉŠÖ‚µ‚Ä‚·‚×‚Ä$\mathcal{F}_n$-‰Â‘ª‚Å‚ ‚é‚Æ‚·‚é‚Æ‚¢‚¤Š´‚¶‚©}B
+$n$‚Å“Y‚¦š•t‚¯‚ç‚ê‚½$\bm{x}_n$‚â$\bm{z}_n$‚ÆŒ¾‚Á‚½Šm—¦•Ï”iŒn—ñƒf[ƒ^j‚ÉŠÖ‚µ‚Ä‚·‚×‚Ä$\mathcal{F}_n$-‰Â‘ª‚Å‚ ‚é‚Æ‰¼’è‚·‚é‚·‚é‚Æ‚¢‚¤Š´‚¶‚©}B
 
 Šùq‚Å‚Í‚ ‚é‚ªA–{e‚Å‚ÍŒn—ñƒf[ƒ^‚Æ‚µ‚Äˆµ‚¤ƒf[ƒ^‚Æ‚µ‚ÄˆÈ‰º‚Ì“ñí—Ş‚ğ—pˆÓ‚·‚éB
 \begin{itemize}
@@ -124,7 +134,7 @@ $\bm{x}_n$‚ÌŸŒ³‚É‚Â‚¢‚Ä‚Í¡‰ñ’¼Ú‚ÉŒ¾‹y‚µ‚È‚¢‚Ì‚Å“Á’i–¾‹L‚·‚é‚±‚Æ‚Í‚È‚¢‚ª—á‚¦‚Î
 		    z_{n1} \\
 		    z_{n2} \\
 		    \vdots \\
-		    z_{nk}
+		    z_{nK}
 	    \end{pmatrix} \\
         z_{nk} &\in \{ 0,1 \}, ^\forall n \in \{1,\dots,N\}, ^\forall k \in \{1,\dots,K\} \\
 	    & \sum_{k=1}^{K} z_{nk} = 1, ^\forall n \in \{1,\dots,N\}
@@ -132,9 +142,9 @@ $\bm{x}_n$‚ÌŸŒ³‚É‚Â‚¢‚Ä‚Í¡‰ñ’¼Ú‚ÉŒ¾‹y‚µ‚È‚¢‚Ì‚Å“Á’i–¾‹L‚·‚é‚±‚Æ‚Í‚È‚¢‚ª—á‚¦‚Î
 \end{align}
 ‚±‚¤‘‚­–‚É‚æ‚éƒƒŠƒbƒg‚Í$K$ŒÂ‚ ‚éi‚Æ‰¼’è‚µ‚Ä‚¢‚éjöİ•Ï”‚Ìæ‚è“¾‚é’lió‘Ôj‚ğ$K$ŸŒ³ƒxƒNƒgƒ‹$\bm{z}_n$
 ‚Ì—v‘f$z_{nk}$‚ª$1$‚Æ‚È‚é‰ÓŠ‚É‘Î‰‚³‚¹‚Ä”»’f‚·‚é‚±‚Æ‚ª‚Å‚«‚é‚Æ‚¢‚¤‚±‚Æ‚Å‚ ‚é\footnote{PRML\cite{Bishop}‚Å‚¢‚¤‚P‘ÎK•„†‰»–@}B
-‹ï‘Ì“I‚É‘‚­‚ÆAöİ•Ï”$z$‚ÍˆÈ‰º‚Ì$K$ŒÂ‚ÌƒxƒNƒgƒ‹’l‚Ì‚¢‚¸‚ê‚©‚ğæ‚é‚Æ‚¢‚¤‚±‚Æ‚Å‚ ‚éB
+‹ï‘Ì“I‚É‘‚­‚ÆAöİ•Ï”$\bm{z}_n$‚ÍˆÈ‰º‚Ì$K$ŒÂ‚Ì$0$‚Æ$1$‚©‚ç¬‚éƒxƒNƒgƒ‹‚Ì‚¢‚¸‚ê‚©‚ğæ‚é‚Æ‚¢‚¤‚±‚Æ‚Å‚ ‚éB
 \begin{align}
-    \bm{z} = 
+    \bm{z}_{n} = 
 	\left.
         \begin{pmatrix}
     		1 \\
@@ -171,13 +181,16 @@ $\bm{x}_n$‚ÌŸŒ³‚É‚Â‚¢‚Ä‚Í¡‰ñ’¼Ú‚ÉŒ¾‹y‚µ‚È‚¢‚Ì‚Å“Á’i–¾‹L‚·‚é‚±‚Æ‚Í‚È‚¢‚ª—á‚¦‚Î
         \quad
     \right\}
     K\text{ŒÂ}
+    ,^\forall n \in \{1,\dots,N \}
 	\label{}
 \end{align}
+‚±‚Ì$0$‚Æ$1$‚©‚ç‚È‚é‚»‚ê‚¼‚ê‚ÌƒxƒNƒgƒ‹‚Í\textbf{Še$\bm{z}_n$ƒxƒNƒgƒ‹‚Ì—v‘f‚Å‚ ‚é$z_{nk}$‚Ì‚Ç‚ÌˆÊ’u‚ª1‚Æ‚È‚é‚©}‚ª‚í‚©‚é‚Æ“Á’è‚Å‚«A
 ‚±‚Ì‚æ‚¤‚É‘‚­‚±‚Æ‚ÅŒ©’Ê‚µ—Ç‚­”®•ÏŒ`‚µ‚Ä‚¢‚­‚±‚Æ‚ª‰Â”\‚É‚È‚éB
-ˆÈ‰º‚Ì‹c˜_‚Å$\sum_{\bm{z}_n}$‚Æ‚¢‚¤‹L†‚ªo‚Ä‚«‚½ê‡‚ÍAãq‚Ì$K$ŒÂ‚Ì$0$‚Æ$1$‚©‚ç‚È‚éƒxƒNƒgƒ‹‚É‘Î‚µ‚Ä˜a‚ğ‘–‚ç‚¹‚é‚à‚Ì‚Æ’è‹`‚µ‚Ä‚¨‚­B
+ˆÈ‰º‚Ì‹c˜_‚Åó‘Ô•Ï”$\bm{z}_n$‚ÉŠÖ‚·‚é˜a$\sum_{\bm{z}_n}$‚Æ‚¢‚¤‹L†‚ªo‚Ä‚«‚½ê‡‚ÍA
+ãq‚Ì$K$ŒÂ‚Ì$0$‚Æ$1$‚©‚ç‚È‚éƒxƒNƒgƒ‹‘S‚Ä‚É‘Î‚µ‚Ä˜a‚ğŒvZ‚·‚é‚à‚Ì‚Æ’è‹`‚µ‚Ä‚¨‚­B
 
 
-‚³‚ç‚É‰B‚êƒ}ƒ‹ƒRƒtƒ‚ƒfƒ‹‚É‚¨‚¢‚Äöİó‘ÔŠÔ‚Ì‘JˆÚ‚ğ•\‚·ğŒ•t‚«•ª•z$p(\bm{z}_n|\bm{z}_{n-1})$‚ğ“Á’¥‚Ã‚¯‚éƒpƒ‰ƒ[ƒ^[A$K \times K$s—ñ$A$‚ğ“±“ü‚µ‚æ‚¤B
+‚³‚ç‚É‰B‚êƒ}ƒ‹ƒRƒtƒ‚ƒfƒ‹‚É‚¨‚¢‚Äöİó‘ÔŠÔ‚Ì‘JˆÚ‚ğ•\‚·ğŒ•t‚«•ª•z$p(\bm{z}_n|\bm{z}_{n-1})$‚ğ“Á’¥‚Ã‚¯‚éƒpƒ‰ƒ[ƒ^A$K \times K$s—ñ$A$‚ğ“±“ü‚µ‚æ‚¤B
 ‚±‚Ìs—ñ$A$‚ÌŠe¬•ª‚Í
 \begin{align}
     A_{jk} := p(z_{nk}=1|z_{n-1,j}=1)
@@ -207,7 +220,7 @@ $\bm{x}_n$‚ÌŸŒ³‚É‚Â‚¢‚Ä‚Í¡‰ñ’¼Ú‚ÉŒ¾‹y‚µ‚È‚¢‚Ì‚Å“Á’i–¾‹L‚·‚é‚±‚Æ‚Í‚È‚¢‚ª—á‚¦‚Î
 ‚Æ‚¢‚¤‚æ‚¤‚ÉA‚ ‚é“Á’è‚Ìó‘ÔŠÔi‚±‚Ìê‡${\bm k}'$‚Æ${\bm j}'$ŠÔj‚Ì‘JˆÚ‚ğs—ñ‚Ì—v‘f‚É•R•t‚¯‚Ä‚İ‚é–‚ªo—ˆ‚éB
 
 
-öİ•Ï”‚Ì‰Šúó‘Ô$\bm{z}_1$‚à“¯—l‚É$K$ŸŒ³ƒxƒNƒgƒ‹‚Ìƒpƒ‰ƒ[ƒ^[$\bm{pi}\in \mathbb{K}$‚ğ
+öİ•Ï”‚Ì‰Šúó‘Ô$\bm{z}_1$‚à“¯—l‚É$K$ŸŒ³ƒxƒNƒgƒ‹‚Ìƒpƒ‰ƒ[ƒ^$\bm{\pi}\in \mathbb{K}$‚ğ
 \begin{align}
     \begin{aligned}
         \bm{\pi} &=
@@ -247,7 +260,7 @@ $\bm{x}_n$‚ÌŸŒ³‚É‚Â‚¢‚Ä‚Í¡‰ñ’¼Ú‚ÉŒ¾‹y‚µ‚È‚¢‚Ì‚Å“Á’i–¾‹L‚·‚é‚±‚Æ‚Í‚È‚¢‚ª—á‚¦‚Î
 \end{align}
 ‚Æ‚·‚é‚±‚Æ‚ª‚Å‚«‚éB
 ŠeX‚Ì$\phi_k$‚Í—á‚¦‚Î•½‹Ï$\mu$E•ªU$\sigma^2$‚Ì³‹K•ª•z‚Ìê‡‚ÍA‚»‚Ì•½‹Ï‚Æ•ªU‚ÌƒZƒbƒg$\phi_k = (\mu,\sigma^2) \in \mathbb{R} \times \mathbb{R}_+$‚Æ‚È‚éB
-ˆÈ~‚Å‚ÍA–{Í‚Å“±“ü‚µ‚½ƒpƒ‰ƒ[ƒ^[$A,\bm{\pi},\bm{\phi}$‚ğ‚Ü‚Æ‚ß‚Ä$\theta := \{\bm{\pi},A,\bm{\phi}\}$‚Æ‘‚­–‚É‚µ‚æ‚¤B
+ˆÈ~‚Å‚ÍA–{Í‚Å“±“ü‚µ‚½ƒpƒ‰ƒ[ƒ^$A,\bm{\pi},\bm{\phi}$‚ğ‚Ü‚Æ‚ß‚Ä$\theta := \{\bm{\pi},A,\bm{\phi}\}$‚Æ‘‚­–‚É‚µ‚æ‚¤B
 
 ‚±‚±‚Å“±“ü‚µ‚½$\theta = \{\bm{\pi},A,\bm{\phi}\}$‚ğg‚Á‚Ä‰B‚êƒ}ƒ‹ƒRƒtƒ‚ƒfƒ‹‚Ì®‚ğ‰ü‚ß‚Ä‘‚«‚È‚¨‚·‚Æ
 \begin{align}
@@ -258,10 +271,10 @@ $\bm{x}_n$‚ÌŸŒ³‚É‚Â‚¢‚Ä‚Í¡‰ñ’¼Ú‚ÉŒ¾‹y‚µ‚È‚¢‚Ì‚Å“Á’i–¾‹L‚·‚é‚±‚Æ‚Í‚È‚¢‚ª—á‚¦‚Î
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{HMM‚ÌÅ–Ş„’è}\label{sec:EM}
 –{Í‚Å‚Í–{e‚Ì–Ú“I‚Ì‚P‚Â‚Å‚ ‚éŠÏ‘ª•Ï”Œn—ñ$\bm{X}=\{\bm{x}_1,\cdots,\bm{x}_N\}$‚ğŠù’mA‚·‚È‚í‚¿Šù‚Éƒf[ƒ^‚ªè‚É“ü‚Á‚½•¨‚Æ‚µ‚ÄA
-ƒ‚ƒfƒ‹‚Ìƒpƒ‰ƒ[ƒ^[$\theta=\{\bm{\pi},A,\bm{\phi}\}$‚ğÅ–Ş„’è‚É‚æ‚è‹‚ß‚é‚±‚Æ‚ğl‚¦‚éB
+ƒ‚ƒfƒ‹‚Ìƒpƒ‰ƒ[ƒ^$\theta=\{\bm{\pi},A,\bm{\phi}\}$‚ğÅ–Ş„’è‚É‚æ‚è‹‚ß‚é‚±‚Æ‚ğl‚¦‚éB
 
 ‚Ü‚¸ŠÏ‘ª•Ï”Œn—ñ$X$‚Æöİ•Ï”Œn—ñ$Z$‚Ì“¯•ª•zŠÖ”$p(X,Z|\theta)$‚ğ$Z$‚É‚Â‚¢‚Ä˜a‚ğæ‚é‚±‚Æ‚Åü•Ó‰»‚µA
-–Ş“xŠÖ”‚ğ“±“ü‚·‚é\footnote{ƒpƒ‰ƒ[ƒ^[‚Ö‚ÌˆË‘¶«‚ğ–¾Šm‚É‚·‚é‚½‚ß$\theta$‚ÅğŒ•t‚¯‚Ä‚¢‚é}\footnote{PRML\cite{Bishop}(13.11)®}B
+–Ş“xŠÖ”‚ğ“±“ü‚·‚é\footnote{ƒpƒ‰ƒ[ƒ^‚Ö‚ÌˆË‘¶«‚ğ–¾Šm‚É‚·‚é‚½‚ß$\theta$‚ÅğŒ•t‚¯‚Ä‚¢‚é}\footnote{PRML\cite{Bishop}(13.11)®}B
 \begin{align}
 	L(\theta|X) = p(X|\theta) = \sum_{Z} p(X,Z|\theta)
 	\label{}
@@ -300,7 +313,7 @@ EMƒAƒ‹ƒSƒŠƒYƒ€‚Í‚Q‚Â‚ÌƒXƒeƒbƒv
     \xi(\bm{z}_{n-1},\bm{z}_n) &:= p(\bm{z}_{n-1},\bm{z}_n|X,\theta^{old}), & \xi:\mathbb{K}\times\mathbb{K} \to [0,1]
 	\label{}
 \end{align}
-‚±‚Ì$\gamma(\bm{z}_n),\xi(\bm{z}_{n-1},\bm{z}_n)$‚É‚Â‚¢‚Äöİ•Ï”$z$‚Æ“¯‚¶‚­AŠe—v‘f‚Å‚Ì•\Œ»
+‚±‚Ì$\gamma(\bm{z}_n),\xi(\bm{z}_{n-1},\bm{z}_n)$‚É‚Â‚¢‚Äöİ•Ï”$\bm{z}$‚Æ“¯‚¶‚­AŠe—v‘f‚Å‚Ì•\Œ»
 \begin{align}
     \begin{aligned}
         \gamma(z_{nk})           &:= \mathbb{E} \left[ z_{nk} \right]         
@@ -335,7 +348,7 @@ EMƒAƒ‹ƒSƒŠƒYƒ€‚Í‚Q‚Â‚ÌƒXƒeƒbƒv
 ‚±‚Ì˜b‘è‚É‚Â‚¢‚Ä‚Í\ref{sec:fb}ÍuƒtƒHƒ[ƒhEƒoƒbƒNƒ[ƒhƒAƒ‹ƒSƒŠƒYƒ€v‚Ås‚¤‚±‚Æ‚É‚µ‚ÄAEMƒAƒ‹ƒSƒŠƒYƒ€‚ÌMƒXƒeƒbƒv‚ğæ‚Él‚¦‚éB
 
 \subsection{MƒXƒeƒbƒv}
-EMƒAƒ‹ƒSƒŠƒYƒ€‚ÌMƒXƒeƒbƒv‚Å‚ÍAƒpƒ‰ƒ[ƒ^[$\theta$‚ğ“K“–‚É‘I‘ğ‚·‚é‚±‚Æ‚Å
+EMƒAƒ‹ƒSƒŠƒYƒ€‚ÌMƒXƒeƒbƒv‚Å‚ÍAƒpƒ‰ƒ[ƒ^$\theta$‚ğ“K“–‚É‘I‘ğ‚·‚é‚±‚Æ‚Å
 $Q(\theta,\theta^{old})$‚ÌÅ‘å‰»‚ğs‚¤–‚ğl‚¦‚éB
 
 ‚±‚±‚Å‘JˆÚs—ñ$A$‚Æ‰Šú•ª•z$\bm{\pi}$‚É‚ÍğŒ
@@ -365,7 +378,7 @@ $Q(\theta,\theta^{old})$‚ÌÅ‘å‰»‚ğs‚¤–‚ğl‚¦‚éB
 	\end{aligned}
 	\label{eq:lagrange_pi_A}
 \end{align}
-‚Æ‚·‚é‚±‚Æ‚ªo—ˆ‚éBc‚è‚Ìƒpƒ‰ƒ[ƒ^[$\bm{\phi}$‚É‚Â‚¢‚Ä‚Ì”÷•ª‚ÍŠÏ‘ª•Ï”$x$‚ª‚Ç‚Ì‚æ‚¤‚È•ª•z‚É]‚¤‚Æİ’è‚·‚é‚©‚É‰‚¶‚ÄŒ‹‰Ê‚ª•Ï‚í‚é‚à‚Ì‚Å‚ ‚é‚Ì‚ÅA‚±‚±‚Å‚Í¦‚³‚È‚¢B
+‚Æ‚·‚é‚±‚Æ‚ªo—ˆ‚éBc‚è‚Ìƒpƒ‰ƒ[ƒ^$\bm{\phi}$‚É‚Â‚¢‚Ä‚Ì”÷•ª‚ÍŠÏ‘ª•Ï”$x$‚ª‚Ç‚Ì‚æ‚¤‚È•ª•z‚É]‚¤‚Æİ’è‚·‚é‚©‚É‰‚¶‚ÄŒ‹‰Ê‚ª•Ï‚í‚é‚à‚Ì‚Å‚ ‚é‚Ì‚ÅA‚±‚±‚Å‚Í¦‚³‚È‚¢B
 ‚±‚±‚ÅZo‚µ‚½\eqref{eq:lagrange_pi_A}‚ğS‘©ğŒ‚Å‚ ‚é‚É‘ã“ü‚µ‚Ä$(\lambda_1,\dots,\lambda_{K+1})$‚ğ‹‚ß‚éB
 \begin{align}
 	\begin{aligned}
@@ -376,16 +389,19 @@ $Q(\theta,\theta^{old})$‚ÌÅ‘å‰»‚ğs‚¤–‚ğl‚¦‚éB
 	\end{aligned}
 	\label{eq:lagrange_lambda}
 \end{align}
-‚½‚¾‚µ‚±‚±‚Å˜a‹L†$\sum$‚Ì•Ï”‚ğ•ÏX‚µ‚Ä‚¢‚é“_‚É’ˆÓ‚³‚ê‚½‚¢BBã‹L‚Ì\eqref{eq:lagrange_lambda}‚ÌŒ‹‰Ê‚ğÄ‚Ñ\eqref{eq:lagrange_pi_A}‚É–ß‚·‚±‚Æ‚Å
+‚½‚¾‚µ‚±‚±‚Å¡Œã‚Ì®•ÏŒ`‚Ì‚½‚ß‚É˜a‹L†$\sum$‚Ì•Ï”‚ğ•ÏX‚µ‚Ä‚¢‚é“_‚É’ˆÓ‚³‚ê‚½‚¢B
+ã‹L‚Ì\eqref{eq:lagrange_lambda}‚ÌŒ‹‰Ê‚ğÄ‚Ñ\eqref{eq:lagrange_pi_A}‚É–ß‚·‚±‚Æ‚Å
 \begin{align}
 	\begin{aligned}
 		\pi_k@&=  \frac{\gamma(z_{1k})}{\lambda_1} = \frac{\gamma(z_{1k})}{\sum_{j=1}^{K} \gamma(\bm{z}_{1j})} \\
         A_{jk} &= \frac{\sum_{n=2}^{N} \xi(z_{n-1,j},z_{nk})}{\lambda_{j+1}} =  \frac{\sum_{n=2}^{N} \xi(z_{n-1,j},z_{nk})}{ \sum_{l=1}^{K} \sum_{n=2}^{N} \xi(z_{n-1,j},z_{nl})}
 	\end{aligned}
-	\label{}
+	\label{eq:update_param}
 \end{align}
-‚Æ‚·‚é‚±‚Æ‚ªo—ˆ‚é\footnote{PRML\cite{Bishop}‚Ì(13.18),(13.19)®}B
-
+‚Æ‚·‚é‚±‚Æ‚ªo—ˆ‚é\footnote{PRML\cite{Bishop}(13.18),(13.19)®}B
+‚±‚ê‚Å–Ú“IŠÖ”‚Å‚ ‚é$Q(\theta,\theta^{old})$‚ğÅ‘å‰»‚·‚éƒpƒ‰ƒ[ƒ^$A,\bm{\pi}$‚ğ‹‚ß‚é–‚ª‚Å‚«‚½B
+$\bm{\phi}$‚ÉŠÖ‚µ‚Ä‚ÍA‚Ç‚Ì‚æ‚¤‚È•ª•z‚ğ‰¼’è‚·‚é‚©‚É‚æ‚é‚½‚ßŒ‹‰Ê‚Í¦‚³‚È‚¢
+\footnote{PRML\cite{Bishop}P335‚É‚Í³‹K•ª•z‚Æ—£U‘½€•ª•z‚Å‚Ì—á‚ª‹LÚ‚³‚ê‚Ä‚¢‚é}B
 
 ‚±‚Ì‚æ‚¤‚ÉEƒXƒeƒbƒvEMƒXƒeƒbƒv‚»‚ê‚¼‚ê‚ğ\’z‚·‚é‚±‚Æ‚ÅEMƒAƒ‹ƒSƒŠƒYƒ€‚Å‚Ì’è®‰»‚ÍŠ®—¹‚Å‚ ‚éB
 c‚³‚ê‚½–â‘è‚Í$Q(\theta,\theta^{old})$‚ÌÅ–Ş„’è‚ğs‚¤‚½‚ß‚Ì$\gamma(z_{nk}),\xi(z_{n-1,j},z_{nk})$‚ÌŒø—¦“I‚ÈZo‚Å‚ ‚èA
@@ -393,13 +409,18 @@ $Q(\theta,\theta^{old})$‚ÌÅ‘å‰»‚ğs‚¤–‚ğl‚¦‚éB
 
 \section{ƒtƒHƒ[ƒhEƒoƒbƒNƒ[ƒhƒAƒ‹ƒSƒŠƒYƒ€}\label{sec:fb}
 ‘Oq‚Ì‚æ‚¤‚É$\gamma(z_{nk}),\xi(z_{n-1,j},z_{nk})$‚ÌŒø—¦“I‚ÈZo•û–@‚ğŒŸ“¢‚µ‚½‚¢B
-‚±‚ÌÍ‚Å‚ÍPRML\cite{Bishop}‚É‚È‚ç‚¢ƒpƒ‰ƒ[ƒ^[$\theta$‚Ö‚ÌˆË‘¶«‚ğ–¾‹L‚µ‚È‚¢‚±‚Æ‚Æ‚·‚éB—á‚¦‚Î
+‚±‚±‚ÅŠm—§‚³‚ê‚éƒtƒHƒ[ƒhEƒoƒbƒNƒ[ƒhƒAƒ‹ƒSƒŠƒYƒ€‚ğ—p‚¢‚é‚ÆA
+\textbf{ŠÏ‘ª•Ï”Œn—ñ$X$‚ğæ“¾‚µ‚½Û‚Ìöİó‘Ô‚Ì„’è}‚Æ‚¢‚¤ˆÓ–¡‡‚¢‚Ì•Ï”$\gamma(z_{nk})$‚à‹‚ß‚é–‚ªo—ˆ‚é‚æ‚¤‚É‚È‚èA
+–{e‚Ì–Ú•W‚à’B¬‚³‚ê‚½–‚É‚È‚éB
+
+
+‚±‚ÌÍ‚Å‚ÍPRML\cite{Bishop}‚É‚È‚ç‚¢ƒpƒ‰ƒ[ƒ^$\theta$‚Ö‚ÌˆË‘¶«‚ğ–¾‹L‚µ‚È‚¢‚±‚Æ‚Æ‚·‚éB—á‚¦‚Î
 \begin{align*}
-    p(X,\bm{z}_n) = p(X|\bm{z}_n,\theta)
+    p(X,\bm{z}_n) = p(X,\bm{z}_n|\theta)
 \end{align*}
 ‚Æ‚¢‚¤—ª‹L–@‚ğ—p‚¢‚éB
 
-‚±‚±‚Å
+‚Å‚Í‘‘¬–{‘è‚ÌŒvZ‚É“ü‚Á‚Äs‚±‚¤B‚±‚±‚Å
 \begin{align}
     p(X,\bm{z}_n) = p(\bm{x}_1,\dots,\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{z}_n)
     \label{}
@@ -409,12 +430,12 @@ $Q(\theta,\theta^{old})$‚ÌÅ‘å‰»‚ğs‚¤–‚ğl‚¦‚éB
 ‚Ì‚ÅA$\gamma(\bm{z}_n)$‚ÍˆÈ‰º‚Ì‚æ‚¤‚É•ÏŒ`‚³‚ê‚éB
 \begin{align}
     \begin{aligned}
-	    \gamma(\bm{z}_n) &= p(\bm{z}_n|X) = \frac{p(X|\bm{z}_n)p(\bm{z}_n)}{p(X)} \\
+	    \gamma(\bm{z}_n) &= p(\bm{z}_n|X) = \frac{p(X|\bm{z}_n)p(\bm{z}_n)}{p(X)} = \frac{p(X,\bm{z}_n)}{p(X)} \\
         &= \frac{p(\bm{x}_1,\dots,\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{z}_n)}{p(X)}\\
         &= \frac{p(\bm{x}_1,\dots,\bm{x}_n,\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)}{p(X)}\\
         &= \frac{\alpha(\bm{z}_n)\beta(\bm{z}_n)}{p(X)}
     \end{aligned}
-    \label{}
+    \label{eq:mod_gamma}
 \end{align}
 ‚½‚¾‚µ‚±‚±‚Å
 \begin{align}
@@ -442,11 +463,11 @@ $\alpha(\bm{z}_n)$‚Æ$\beta(\bm{z}_n)$‚ğŒø—¦“I‚É‹‚ß‚é‚½‚ß‚ÌŒvZ•û–@‚ğ\’z‚·‚éB
 		&= p(\bm{x}_{n}|\bm{z}_n) \sum_{\bm{z}_{n-1}} p(\bm{x}_1,\dots,\bm{x}_{n-1},\bm{z}_{n-1}) p(\bm{z}_n|\bm{z}_{n-1}) \\
 		&= p(\bm{x}_{n}|\bm{z}_n) \sum_{\bm{z}_{n-1}} \alpha(\bm{z}_{n-1}) p(\bm{z}_n|\bm{z}_{n-1})
 	\end{aligned}
-	\label{}
+	\label{eq:forward_alpha}
 \end{align}
 ‚±‚Ì®‚Í$\alpha(\bm{z}_{n-1})$‚ğZo‚µ‚Ä‚©‚ç$\alpha(\bm{z}_n)$‚ğZo‚·‚é‚Æ‚¢‚¤ˆÓ–¡‚ÅA
 $n$‚ÉŠÖ‚µ‚ÄAŒ¾‚¤‚È‚ê‚ÎŠÔ‚ÌŒü‚«‚ÉŠÖ‚µ‚Ä\textbf{‘OŒü‚«‚ÈiƒtƒHƒ[ƒhjÄ‹A}ŒvZ‚Æ‚È‚Á‚Ä‚¢‚é‚Ì‚ÅA
-ƒtƒHƒ[ƒh$\alpha$Ä‹A‚ÆŒÄ‚Ô–‚É‚·‚éB
+ƒtƒHƒ[ƒh$\alpha$Ä‹A‚ÆŒÄ‚Ô–‚É‚·‚é\footnote{PRML\cite{Bishop}‚Å‚à•\‹LƒuƒŒ‚ª‚ ‚Á‚Ä‚Ç‚ê‚ª³‚µ‚¢‚Ì‚©‚æ‚­‚í‚©‚Á‚Ä‚È‚¢}B
 ‚±‚ÌƒtƒHƒ[ƒhÄ‹AŒvZ‚ğs‚¤‚½‚ß‚Ì‰ŠúğŒ$\alpha(\bm{z}_1)$‚Í
 \begin{align}
 	\begin{aligned}
@@ -470,44 +491,46 @@ $n$‚ÉŠÖ‚µ‚ÄAŒ¾‚¤‚È‚ê‚ÎŠÔ‚ÌŒü‚«‚ÉŠÖ‚µ‚Ä\textbf{‘OŒü‚«‚ÈiƒtƒHƒ[ƒhjÄ‹A}ŒvZ
 		&= \sum_{\bm{z}_{n+1}} p(\bm{x}_{n+2},\dots,\bm{x}_N|\bm{z}_{n+1}) p(\bm{x}_{n+1}|\bm{z}_{n+1}) p(\bm{z}_{n+1}|\bm{z}_n) \\
 		&= \sum_{\bm{z}_{n+1}} \beta(\bm{z}_{n+1}) p(\bm{x}_{n+1}|\bm{z}_{n+1}) p(\bm{z}_{n+1}|\bm{z}_n)
 	\end{aligned}
-	\label{}
+	\label{eq:backward_beta}
 \end{align}
 ‚±‚ê‚Í$\alpha$‚ÌÄ‹A®‚Æ‚Í‹t‚É$\beta(\bm{z}_{n+1}$‚ğZo‚µ‚½Œã$\beta(\bm{z}_n)$‚ğZo‚·‚é‚Æ‚¢‚¤
 $n$‚ÌŒü‚«‚É‘Î‚µ‚Ä\textbf{ŒãŒü‚«iƒoƒbƒNƒ[ƒhjÄ‹A}ŒvZ‚Æ‚È‚Á‚Ä‚¢‚é‚Ì‚ÅAƒoƒbƒNƒ[ƒh$\beta$Ä‹A‚ÆŒÄ‚Ô–‚É‚·‚éB
 ‚±‚ê‚ÅPRML\cite{Bishop}‚Ì(13.38)®‚ğ“±o‚·‚é‚±‚Æ‚ªo—ˆ‚½B
 
 $\beta$‚ÌÄ‹AŒvZ‚Ì‰Šú’l‚Æ‚È‚é$\beta(\bm{z}_N)$‚Í
-$\gamma(\bm{z}_N)=p(\bm{z}_N|X)$,$\alpha(\bm{z}_N)=p(\bm{x}_1,\dots,\bm{x}_N,\bm{z}_N)$‚Å‚ ‚éˆê•ûA
+$\gamma(\bm{z}_N)=p(\bm{z}_N|X)$,$\alpha(\bm{z}_N)=p(\bm{x}_1,\dots,\bm{x}_N,\bm{z}_N)=p(X,\bm{z}_N)$‚Å‚ ‚éˆê•ûA
+\eqref{eq:mod_gamma}®‚æ‚è
 \begin{align}
 	\gamma(\bm{z}_N) = \frac{\alpha(\bm{z}_N)\beta(\bm{z}_N)}{p(X)}
 	\label{}
 \end{align}
-‚Æ‚È‚é‚Ì‚Å
+‚Æ‚È‚é‚Ì‚ÅA‚±‚ê‚ç‚ÌŠÖŒW‚©‚ç
 \begin{align}
 	\beta(\bm{z}_N) = 1
-	\label{}
+	\label{eq:con_end_beta}
 \end{align}
-‚Æ‚È‚éB
+‚ÆŒˆ‚ß‚é–‚ªo—ˆ‚éB
 
-
+‚à‚µ–Ş“xŠÖ”$L(\theta|X)(=p(X|\theta))$‚Ì’l‚ğ‹‚ß‚½‚¢ê‡‚É‚Í
 \begin{align}
 	\sum_{\bm{z}_n} \gamma(\bm{z}_n) = \sum_{\bm{z}_n} p(\bm{z}_n|X) = 1
 \end{align}
+‚Å‚ ‚é‚±‚Æ‚æ‚è
 \begin{align}
-	1 = \sum_{\bm{z}_n} \gamma(\bm{z}_n) = \sum_{\bm{z}_n} \frac{p(\alpha(\bm{z}_n)\beta(\bm{z}_n)}{p(X)} = \frac{1}{p(X)} \sum_{\bm{z}_n} p(\alpha(\bm{z}_n)\beta(\bm{z}_n) \\
-	\therefore p(X) = \sum_{\bm{z}_n} p(\alpha(\bm{z}_n)\beta(\bm{z}_n)
+	1 &= \sum_{\bm{z}_n} \gamma(\bm{z}_n) = \sum_{\bm{z}_n} \frac{\alpha(\bm{z}_n)\beta(\bm{z}_n)}{p(X)} = \frac{1}{p(X)} \sum_{\bm{z}_n} \alpha(\bm{z}_n)\beta(\bm{z}_n) \\
+	\therefore p(X) &= \sum_{\bm{z}_n} \alpha(\bm{z}_n)\beta(\bm{z}_n)
 	\label{}
 \end{align}
 ‚Æ‚µ‚Ä–Ş“xŠÖ”$p(X)$‚ğŒvZ‚·‚é‚±‚Æ‚ªo—ˆ‚éBã®‚Í”CˆÓ‚Ì$n \in \left\{ 1,\cdots, N \right\}$‚É‘Î‚µ‚Ä¬—§‚·‚é–A
-‚Ü‚½‚ÅŒ©‚½‚æ‚¤‚É$\beta(\bm{z}_N)=1$‚Å‚ ‚é–‚ğŠ¨ˆÄ‚·‚é‚Æ
+‚Ü‚½\eqref{eq:con_end_beta}®‚ÅŒ©‚½‚æ‚¤‚É$\beta(\bm{z}_N)=1$‚Å‚ ‚é–‚ğŠ¨ˆÄ‚·‚é‚Æ
 \begin{align}
-	p(X) = \sum_{\bm{z}_N} p(\alpha(\bm{z}_N))
+	L(X|\theta) = p(X) = \sum_{\bm{z}_N} \alpha(\bm{z}_N))
 	\label{}
 \end{align}
-‚Æ‘‚­‚±‚Æ‚ªo—ˆ‚éB‚±‚ê‚ÅPRML\cite{Bishop}‚Ì(13.41)(13.42)‚ğ“±o‚·‚é–‚ªo—ˆ‚½B
+‚Æ‘‚­‚±‚Æ‚ªo—ˆ‚éB‚±‚ê‚Å–Ş“xŠÖ”$L(X|\theta)$‚Ì’l‚ğ‹‚ß‚é–‚ªo—ˆ‚é\footnote{PRML\cite{Bishop}(13.41)(13.42)}B
 
 
-$\xi(\bm{z}_{n-1},\bm{z}_n)$‚ğ‹‚ß‚é‚É‚ÍˆÈ‰º‚Ì‚æ‚¤‚ÉŒvZ‚·‚éB 
+ÅŒã‚É$\xi(\bm{z}_{n-1},\bm{z}_n)$‚ğ‹‚ß‚é‚É‚ÍˆÈ‰º‚Ì‚æ‚¤‚ÉŒvZ‚·‚éB 
 \begin{align}
 	\begin{aligned}
 		\xi(\bm{z}_{n-1},\bm{z}_n) 
@@ -517,18 +540,27 @@ $\xi(\bm{z}_{n-1},\bm{z}_n)$‚ğ‹‚ß‚é‚É‚ÍˆÈ‰º‚Ì‚æ‚¤‚ÉŒvZ‚·‚éB
 		&= \frac{p(\bm{x}_1,\dots,\bm{x}_{n-1}|\bm{z}_{n-1})p(\bm{z}_{n-1})p(\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{z}_n|\bm{z}_{n-1})}{p(X)}\\
 		&= \frac{\alpha(\bm{z}_{n-1})p(\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)\beta(\bm{z}_n)}{p(X)}
 	\end{aligned}
-	\label{}
+	\label{eq:mod_xi}
 \end{align}
 ƒtƒHƒ[ƒh($\alpha$)Ä‹A‚ÆƒoƒbƒNƒ[ƒh($\beta$)Ä‹A‚ÌŒvZŒ‹‰Ê‚ğ—p‚¢‚Ä$\xi(\bm{z}_{n-1},\bm{z}_n)$‚ğŒvZ‚·‚é–‚ªo—ˆ‚éB
+
 
 ‚±‚±‚Ü‚ÅZo‚µ‚Ä‚«‚½“¹‹ï‚ÅEMƒAƒ‹ƒSƒŠƒYƒ€‚ğŠ®¬‚³‚¹‚é‚±‚Æ‚ªo—ˆ‚é‚Ì‚Å‚»‚Ìè‡‚ğ‚Ü‚Æ‚ß‚Ä‚¨‚±‚¤B
 \begin{enumerate}
     \item ƒpƒ‰ƒ[ƒ^$\theta^{old}=(\pi,A,\bm{\phi})$‚ğ“K“–‚É’è‚ß‚é
-    \item ƒtƒHƒ[ƒh$\alpha$Ä‹AAƒoƒbƒNƒ[ƒh$\beta$Ä‹A‚ğÀs‚µA$\gamma(\bm{z}_n),\xi(\bm{z}_{n-1},\bm{z}_n)$‚ğ‹‚ß‚éiEƒXƒeƒbƒvŠ®—¹j
-    \item ®‚ğ—p‚¢‚ÄXV‚³‚ê‚½ƒpƒ‰ƒ[ƒ^$\theta^{new}$‚ğ‹‚ß‚éiMƒXƒeƒbƒvj
+    \item ƒtƒHƒ[ƒh$\alpha$Ä‹Ai\eqref{eq:forward_alpha}®)AƒoƒbƒNƒ[ƒh$\beta$Ä‹Ai\eqref{eq:backward_beta}®j‚ğÀs‚µA
+        \eqref{eq:mod_gamma}®‚æ‚è$\gamma(\bm{z}_n)‚ğA\eqref{eq:mod_xi}®‚æ‚è\xi(\bm{z}_{n-1},\bm{z}_n)$‚ğ‚»‚ê‚¼‚ê‹‚ß‚éiEƒXƒeƒbƒvŠ®—¹j
+    \item \eqref{eq:update_param}®‚ğ—p‚¢‚ÄXV‚³‚ê‚½ƒpƒ‰ƒ[ƒ^$\theta^{new}$‚ğ‹‚ß‚éiMƒXƒeƒbƒvj
     \item 2,3‚ğƒpƒ‰ƒ[ƒ^$\theta$‚ªû‘©‚·‚é‚Ü‚ÅŒğŒİ‚ÉŒJ‚è•Ô‚·
 \end{enumerate}
+Œã‚Í‚±‚ê‚ğÀ‘•‚µ‚ÄƒKƒVƒKƒVÀ–±‚È‚èŒ¤‹†‚È‚è‚Åg‚Á‚Äs‚«‚Ü‚µ‚å‚¤B
 
+
+‚¨‚µ‚Ü‚¢B
+
+\appendix
+\section{–{•Ò‚Å‚Í–¢Ø–¾‚¾‚Á‚½‚à‚Ì‚ÌØ–¾}
+iH–’†j
 
 \begin{thebibliography}{1}
 \bibitem{Bishop} C.M.ƒrƒVƒ‡ƒbƒv, ƒpƒ^[ƒ“”F¯‚Æ‹@ŠBŠwKi‰ºjFƒxƒCƒY—˜_‚É‚æ‚é“Œv“I—\‘ª, ŠÛ‘Po”Å, 2008.

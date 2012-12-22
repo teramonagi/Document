@@ -191,6 +191,7 @@ pip-log.txt
 *.snm
 *.synctex.gz
 *.toc
+*.tex~
 *.vrb
 *.xdy
 *.tdo

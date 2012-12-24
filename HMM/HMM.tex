@@ -560,7 +560,64 @@ $\gamma(\bm{z}_N)=p(\bm{z}_N|X)$,$\alpha(\bm{z}_N)=p(\bm{x}_1,\dots,\bm{x}_N,\bm
 
 \appendix
 \section{本編では未証明だったものの証明}
-（工事中）
+PRML\cite{Bishop}において、(13.24)～(13.31)式として条件付き独立性に関する等式が示されているが、
+本稿においては未証明だったのでその点捕捉したい。同様の証明問題はPRML\cite{Bishop}において演習問題13.10として取り上げられている。
+
+証明方法としてはHMMの定義式に従ってひたすら式変形していくだけなので、
+ここでは本稿でも陽に言及した(13.24)式
+\begin{align*}
+    p(X|\bm{z}_n) = p(\bm{x}_1,\cdots,\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)
+\end{align*}
+の証明を示すこととする。
+
+右辺第一項は
+\begin{align}
+    \begin{aligned}
+        p(\bm{x}_1,\cdots,\bm{x}_n|\bm{z}_n)
+        &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}, \bm{x}_{n+1},\cdots,\bm{x}_N} p(X,Z)\\
+        &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}, \bm{x}_{n+1},\cdots,\bm{x}_N} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^N p(\bm{x}_k|\bm{z}_k) \\
+        &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \sum_{\bm{x}_{n+1},\cdots,\bm{x}_N} \prod_{k=1}^N p(\bm{x}_k|\bm{z}_k) \\
+        &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^n p(\bm{x}_k|\bm{z}_k) \\
+        &= \frac{1}{p(\bm{z}_n)}\sum_{\bm{z}_{1:n-1}} p(\bm{z}_1) \prod_{k=2}^n p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^n p(\bm{x}_k|\bm{z}_k) \\
+    \end{aligned}
+    \label{}
+\end{align}
+と変形する事が出来る。正しここで
+$Z \setminus \{\bm{z}_n\}$は$\{\bm{z}_1,\dots,\bm{z}_{n-1},\bm{z}_{n+1},\dots,\bm{z}_N\}$の事であり、集合の要素として$\bm{z}_n$を除いた物として定義する。
+右辺第二項も同様に
+\begin{align}
+    \begin{aligned}
+        p(\bm{x}_{n+1},\cdots,\bm{x}_N|\bm{z}_n)
+        &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}, \bm{x}_1,\cdots,\bm{x}_n} p(X,Z)\\
+        &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}, \bm{x}_1,\cdots,\bm{x}_n} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^N p(\bm{x}_k|\bm{z}_k) \\
+        &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \sum_{\bm{x}_1,\cdots,\bm{x}_n} \prod_{k=1}^N p(\bm{x}_k|\bm{z}_k) \\
+        &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=n+1}^N p(\bm{x}_k|\bm{z}_k) \\
+        &= \frac{1}{p(\bm{z}_n)}\sum_{\bm{z}_{n+1},\cdots,\bm{z}_N} p(\bm{z}_n) \prod_{k=n+1}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=n+1}^N p(\bm{x}_k|\bm{z}_k) \\
+        &= \sum_{\bm{z}_{n+1},\cdots,\bm{z}_N} \prod_{k=n+1}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=n+1}^N p(\bm{x}_k|\bm{z}_k) \\
+    \end{aligned}
+    \label{}
+\end{align}
+と変形する事が出来る。
+
+各々式変形した結果を掛け合わせると
+\begin{align}
+    \begin{aligned}
+        & p(\bm{x}_1,\cdots,\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\cdots,\bm{x}_N|\bm{z}_n) \\
+        & \quad = \left\{\frac{1}{p(\bm{z}_n)}\sum_{\bm{z}_{1:n-1}} p(\bm{z}_1) \prod_{k=2}^n p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^n p(\bm{x}_k|\bm{z}_k)\right\}\left\{ \sum_{\bm{z}_{n+1},\cdots,\bm{z}_N} \prod_{k=n+1}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=n+1}^N p(\bm{x}_k|\bm{z}_k)\right\} \\
+        & \quad = \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^N p(\bm{x}_k|\bm{z}_k) \\
+        & \quad = \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(X,Z) \\
+        & \quad = \frac{1}{p(\bm{z}_n)}p(X,\bm{z}_n) \\
+        & \quad = p(X|\bm{z}_n)
+    \end{aligned}
+    \label{}
+\end{align}
+\begin{align*}
+    \therefore
+        p(\bm{x}_1,\cdots,\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\cdots,\bm{x}_N|\bm{z}_n) = p(X,\bm{z}_n)
+    \label{}
+\end{align*}
+となるので、証明する事ができた。
+
 
 \begin{thebibliography}{1}
 \bibitem{Bishop} C.M.ビショップ, パターン認識と機械学習（下）：ベイズ理論による統計的予測, 丸善出版, 2008.

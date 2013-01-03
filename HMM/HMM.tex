@@ -200,7 +200,7 @@ $\bm{x}_n$‚ÌŸŒ³‚É‚Â‚¢‚Ä‚Í¡‰ñ’¼Ú‚ÉŒ¾‹y‚µ‚È‚¢‚Ì‚Å“Á’i–¾‹L‚·‚é‚±‚Æ‚Í‚È‚¢‚ª—á‚¦‚Î
 ‘JˆÚ\textbf{Šm—¦}‚Å‚ ‚é‚±‚Æ‚©‚çs—ñ$A$‚Í‹KŠi‰»‚³‚ê‚Ä‚¨‚èA``Œn‚Í‚¢‚¸‚ê‚©‚Ìó‘Ô‚É‘JˆÚ‚·‚é''‚Æ‚¢‚¤ˆÓ–¡‚Ås‚«æ‚Ìó‘Ô$k$‚É‘Î‚µ‚Ä˜a‚ğæ‚é‚Æ1‚É‚È‚éB
 ‚·‚È‚í‚¿
 \begin{align}
-	\sum_{k=1}^{K} A_{jk} = 1 , ^\forall k \in \{1,2,\dots,K \}
+	\sum_{k=1}^{K} A_{jk} = 1 , ^\forall j \in \{1,2,\dots,K \}
 	\label{}
 \end{align}
 ‚ª¬—§‚·‚éB$z_{nk} \in \{0,1\} ,^\forall n \in \{1,\dots,N\},^\forall k \in \{1,\dots,K\}$‚Å‚ ‚é‚±‚Æ‚ğv‚¢o‚µA
@@ -335,7 +335,7 @@ EMƒAƒ‹ƒSƒŠƒYƒ€‚Í‚Q‚Â‚ÌƒXƒeƒbƒv
     &= \sum_{\bm{z}_1} p(\bm{z}_1|X,\theta^{old}) \ln p(\bm{z}_1|\bm{\pi}) + \sum_{n=2}^{N} \sum_{Z} p(Z|X,\theta^{old}) \ln p(\bm{z}_n|\bm{z}_{n-1},A) + \sum_{n=1}^{N} \sum_{Z} p(Z|X,\theta^{old})  \ln p(\bm{x}_n|\bm{z}_n ,\bm{\phi}) \\
     &= \sum_{\bm{z}_1} p(\bm{z}_1|X,\theta^{old}) \ln p(\bm{z}_1|\bm{\pi}) + \sum_{n=2}^{N} \sum_{\bm{z}_n,\bm{z}_{n-1}} p(\bm{z}_n,\bm{z}_{n-1}|X,\theta^{old}) \ln p(\bm{z}_n|\bm{z}_{n-1},A) + \sum_{n=1}^{N} \sum_{\bm{z}_n} p(\bm{z}_n|X,\theta^{old}) \ln p(\bm{x}_n|\bm{z}_n,\bm{\phi}) \\
 	&= \sum_{\bm{z}_1} \sum_{k=1}^{K} \gamma(\bm{z}_1) z_{1k} \ln \pi_k
-	+  \sum_{n=2}^{N}  \sum_{\bm{z}_n,\bm{z}_{n-1}} \sum_{j=1}^{K} \sum_{k=1}^{K} \xi(\bm{z}_{n-1},\bm{z}_n) z_{n-1,j} z_{nk} \ln A_{jk} 
+	+  \sum_{n=2}^{N}  \sum_{\bm{z}_n,\bm{z}_{n-1}} \sum_{j=1}^{K} \sum_{k=1}^{K} \xi(\bm{z}_{n-1},\bm{z}_n) z_{n-1,j} \times z_{nk} \ln A_{jk} 
     +  \sum_{n=1}^{k} \sum_{k=1}^{K} \sum_{\bm{z}_n} \gamma(\bm{z}_n) z_{nk} \ln p(\bm{x}_k|\phi_k) \\
 	&= \sum_{k=1}^{K} \gamma(z_{1k}) \ln \pi_k
    	+  \sum_{n=2}^{N} \sum_{j=1}^{K} \sum_{k=1}^{K} \xi(z_{n-1,j},z_{nk}) \ln A_{jk} 
@@ -354,7 +354,7 @@ $Q(\theta,\theta^{old})$‚ÌÅ‘å‰»‚ğs‚¤–‚ğl‚¦‚éB
 ‚±‚±‚Å‘JˆÚs—ñ$A$‚Æ‰Šú•ª•z$\bm{\pi}$‚É‚ÍğŒ
 \begin{align*}
     \begin{aligned}
-        & \sum_{k}A_{jk} = 1, ^\forall k \in \{1,\dots,K\} \\
+        & \sum_{k}A_{jk} = 1, ^\forall j \in \{1,\dots,K\} \\
         & \sum_{k=1}^{K} \pi_k = 1
     \end{aligned}
 \end{align*}
@@ -363,8 +363,8 @@ $Q(\theta,\theta^{old})$‚ÌÅ‘å‰»‚ğs‚¤–‚ğl‚¦‚éB
 Å‘å‰»–â‘è‚Æ‚µ‚Ä$Q(\theta,\theta^{old})$‚ÌÅ‘å‰»–â‘è‚ğ‰ğ‚­–‚É‚·‚éB
 \begin{align}
 	\begin{aligned}
-		\theta_{max}    &=  \argmax_{\theta=(\pi,A,\phi)} F(\bm{\pi}, A, \bm{\phi}) \\ 
-        F(\bm{\pi}, A, \bm{\phi}) &:= Q(\theta, \theta^{old}) - \lambda_1\left(\sum_{k=1}^{K} \pi_k - 1 \right) + \sum_{j=1}^{K} \lambda_{j+1} \left( \sum_{k=1}^{K} A_{jk} - 1 \right)\\ 
+        \theta_{max}    &=  \argmax_{\theta=(\bm{\pi},A,\bm{\phi})} F(\bm{\pi}, A, \bm{\phi}) \\ 
+        F(\bm{\pi}, A, \bm{\phi}) &:= Q(\theta, \theta^{old}) - \lambda_1\left(\sum_{k=1}^{K} \pi_k - 1 \right) - \sum_{j=1}^{K} \lambda_{j+1} \left( \sum_{k=1}^{K} A_{jk} - 1 \right)\\ 
 	\end{aligned}
 \label{}
 \end{align}
@@ -524,7 +524,7 @@ $\gamma(\bm{z}_N)=p(\bm{z}_N|X)$,$\alpha(\bm{z}_N)=p(\bm{x}_1,\dots,\bm{x}_N,\bm
 ‚Æ‚µ‚Ä–Ş“xŠÖ”$p(X)$‚ğŒvZ‚·‚é‚±‚Æ‚ªo—ˆ‚éBã®‚Í”CˆÓ‚Ì$n \in \left\{ 1,\cdots, N \right\}$‚É‘Î‚µ‚Ä¬—§‚·‚é–A
 ‚Ü‚½\eqref{eq:con_end_beta}®‚ÅŒ©‚½‚æ‚¤‚É$\beta(\bm{z}_N)=1$‚Å‚ ‚é–‚ğŠ¨ˆÄ‚·‚é‚Æ
 \begin{align}
-	L(X|\theta) = p(X) = \sum_{\bm{z}_N} \alpha(\bm{z}_N))
+	L(X|\theta) = p(X) = \sum_{\bm{z}_N} \alpha(\bm{z}_N)
 	\label{}
 \end{align}
 ‚Æ‘‚­‚±‚Æ‚ªo—ˆ‚éB‚±‚ê‚Å–Ş“xŠÖ”$L(X|\theta)$‚Ì’l‚ğ‹‚ß‚é–‚ªo—ˆ‚é\footnote{PRML\cite{Bishop}(13.41)(13.42)}B
@@ -536,9 +536,9 @@ $\gamma(\bm{z}_N)=p(\bm{z}_N|X)$,$\alpha(\bm{z}_N)=p(\bm{x}_1,\dots,\bm{x}_N,\bm
 		\xi(\bm{z}_{n-1},\bm{z}_n) 
 		&= p(\bm{z}_{n-1},\bm{z}_{n}|X) \\
 		&= \frac{p(X|\bm{z}_{n-1},\bm{z}_n)p(\bm{z}_{n-1},\bm{z}_n)}{p(X)} \\
-		&= \frac{p(\bm{x}_1,\dots,\bm{x}_{n-1}|\bm{z}_{n-1})p(\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{z}_n|\bm{z}_{n-1})p(\bm{z}_{n-1})}{p(X)}\\
-		&= \frac{p(\bm{x}_1,\dots,\bm{x}_{n-1}|\bm{z}_{n-1})p(\bm{z}_{n-1})p(\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{z}_n|\bm{z}_{n-1})}{p(X)}\\
-		&= \frac{\alpha(\bm{z}_{n-1})p(\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)\beta(\bm{z}_n)}{p(X)}
+		&= \frac{p(\bm{x}_1,\dots,\bm{x}_{n-1}|\bm{z}_{n-1})p(\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{z}_n|\bm{z}_{n-1})p(\bm{z}_{n-1})}{p(X)}\\
+		&= \frac{p(\bm{x}_1,\dots,\bm{x}_{n-1}|\bm{z}_{n-1})p(\bm{z}_{n-1})p(\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\dots,\bm{x}_N|\bm{z}_n)p(\bm{z}_n|\bm{z}_{n-1})}{p(X)}\\
+        &= \frac{\alpha(\bm{z}_{n-1})p(\bm{x}_n|\bm{z}_n)p(\bm{z}_n|\bm{z}_{n-1})\beta(\bm{z}_n)}{p(X)}
 	\end{aligned}
 	\label{eq:mod_xi}
 \end{align}
@@ -578,7 +578,7 @@ PRML\cite{Bishop}‚É‚¨‚¢‚ÄA(13.24)`(13.31)®‚Æ‚µ‚ÄğŒ•t‚«“Æ—§«‚ÉŠÖ‚·‚é“™®‚ª
         &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}, \bm{x}_{n+1},\cdots,\bm{x}_N} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^N p(\bm{x}_k|\bm{z}_k) \\
         &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \sum_{\bm{x}_{n+1},\cdots,\bm{x}_N} \prod_{k=1}^N p(\bm{x}_k|\bm{z}_k) \\
         &= \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^n p(\bm{x}_k|\bm{z}_k) \\
-        &= \frac{1}{p(\bm{z}_n)}\sum_{\bm{z}_{1:n-1}} p(\bm{z}_1) \prod_{k=2}^n p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^n p(\bm{x}_k|\bm{z}_k) \\
+        &= \frac{1}{p(\bm{z}_n)}\sum_{\bm{z}_1,\dots,\bm{z}_{n-1}} p(\bm{z}_1) \prod_{k=2}^n p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^n p(\bm{x}_k|\bm{z}_k) \\
     \end{aligned}
     \label{}
 \end{align}
@@ -603,7 +603,7 @@ $Z \setminus \{\bm{z}_n\}$‚Í$\{\bm{z}_1,\dots,\bm{z}_{n-1},\bm{z}_{n+1},\dots,\b
 \begin{align}
     \begin{aligned}
         & p(\bm{x}_1,\cdots,\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\cdots,\bm{x}_N|\bm{z}_n) \\
-        & \quad = \left\{\frac{1}{p(\bm{z}_n)}\sum_{\bm{z}_{1:n-1}} p(\bm{z}_1) \prod_{k=2}^n p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^n p(\bm{x}_k|\bm{z}_k)\right\}\left\{ \sum_{\bm{z}_{n+1},\cdots,\bm{z}_N} \prod_{k=n+1}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=n+1}^N p(\bm{x}_k|\bm{z}_k)\right\} \\
+        & \quad = \left\{\frac{1}{p(\bm{z}_n)}\sum_{\bm{z}_1,\dots,\bm{z}_{n-1}} p(\bm{z}_1) \prod_{k=2}^n p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^n p(\bm{x}_k|\bm{z}_k)\right\}\left\{ \sum_{\bm{z}_{n+1},\cdots,\bm{z}_N} \prod_{k=n+1}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=n+1}^N p(\bm{x}_k|\bm{z}_k)\right\} \\
         & \quad = \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(\bm{z}_1) \prod_{k=2}^N p(\bm{z}_k|\bm{z}_{k-1}) \prod_{k=1}^N p(\bm{x}_k|\bm{z}_k) \\
         & \quad = \frac{1}{p(\bm{z}_n)}\sum_{Z \setminus \{\bm{z}_n\}} p(X,Z) \\
         & \quad = \frac{1}{p(\bm{z}_n)}p(X,\bm{z}_n) \\
@@ -613,7 +613,7 @@ $Z \setminus \{\bm{z}_n\}$‚Í$\{\bm{z}_1,\dots,\bm{z}_{n-1},\bm{z}_{n+1},\dots,\b
 \end{align}
 \begin{align*}
     \therefore
-        p(\bm{x}_1,\cdots,\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\cdots,\bm{x}_N|\bm{z}_n) = p(X,\bm{z}_n)
+        p(\bm{x}_1,\cdots,\bm{x}_n|\bm{z}_n)p(\bm{x}_{n+1},\cdots,\bm{x}_N|\bm{z}_n) = p(X|\bm{z}_n)
     \label{}
 \end{align*}
 ‚Æ‚È‚é‚Ì‚ÅAØ–¾‚·‚é–‚ª‚Å‚«‚½B
